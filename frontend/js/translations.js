@@ -25,10 +25,12 @@ const translations = {
     "consulate1.deadline": "Regisztrációs határidő: 2026. április 2.",
     "consulate1.detail":
       "A névjegyzékbe vételi kérelmet a Nemzeti Választási Irodánál kell benyújtani legkésőbb 2026. április 2-ig.",
+    "consulate1.register": "Regisztráció (mo.hu)",
     "consulate1.next": "Tovább – Helyszín és időpont",
 
     "consulate2.title": "Helyszín és tudnivalók",
     "consulate2.location": "Helyszín: Magyar Alkonzulátus, Santa Clara",
+    "consulate2.maplink": "5201 Great America Pkwy, Suite 320, Santa Clara, CA 95054",
     "consulate2.date": "Dátum: 2026. április 11. (szombat)",
     "consulate2.time": "Nyitvatartás: 6:00 – 19:00",
     "consulate2.bring": "Hozd magaddal az érvényes személyi igazolványodat vagy útleveledet!",
@@ -41,6 +43,7 @@ const translations = {
     "mail1.deadline": "Regisztrációs határidő: 2026. március 18.",
     "mail1.detail":
       "A regisztráció a mo.hu-n (ügyfélkapu) keresztül történik. A levélszavazó csomagot postán kapod meg a megadott címre.",
+    "mail1.register": "Regisztráció (mo.hu)",
     "mail1.next": "Tovább – Fontos tudnivalók",
 
     "mail2.title": "Fontos tudnivalók",
@@ -169,10 +172,12 @@ const translations = {
     "consulate1.deadline": "Registration deadline: April 2, 2026",
     "consulate1.detail":
       "You must submit a voter registration request to the National Election Office by April 2, 2026.",
+    "consulate1.register": "Register (mo.hu)",
     "consulate1.next": "Next – Location & Schedule",
 
     "consulate2.title": "Location & Details",
     "consulate2.location": "Location: Hungarian Consulate General, Santa Clara",
+    "consulate2.maplink": "5201 Great America Pkwy, Suite 320, Santa Clara, CA 95054",
     "consulate2.date": "Date: April 11, 2026 (Saturday)",
     "consulate2.time": "Hours: 6:00 AM – 7:00 PM",
     "consulate2.bring": "Bring your valid Hungarian ID card or passport!",
@@ -185,6 +190,7 @@ const translations = {
     "mail1.deadline": "Registration deadline: March 18, 2026",
     "mail1.detail":
       "Registration is done through mo.hu (government portal). Your ballot package will be mailed to the address you provide.",
+    "mail1.register": "Register (mo.hu)",
     "mail1.next": "Next – Important Details",
 
     "mail2.title": "Important Details",
