@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Az Öbölben Szavazók – Magyar Szavazási Útmutató</title>
+  <meta name="description" content="Segítünk a Bay Area-ban élő magyaroknak szavazni a 2026-os parlamenti választáson.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <h1 data-i18n="site.title">Az Öbölben Szavazók</h1>
+    <p data-i18n="site.subtitle">Magyar szavazási útmutató – San Francisco Bay Area</p>
+    <button id="lang-toggle" class="lang-btn" data-i18n="lang.toggle">English</button>
+  </header>
+  <div class="hu-stripe">
+    <span class="stripe-red"></span>
+    <span class="stripe-white"></span>
+    <span class="stripe-green"></span>
+  </div>
+
+  <!-- Main Content -->
+  <main class="main">
+
+    <!-- LANDING -->
+    <div id="card-landing" class="card active slide-in">
+      <h2 data-i18n="landing.headline">Segítünk szavazni!</h2>
+      <p data-i18n="landing.description">
+        A 2026-os magyar parlamenti választás április 11-én lesz. Ha az SF Bay Area-ban élsz, kétféleképpen szavazhatsz. Segítünk kideríteni, melyik a Te utad!
+      </p>
+      <div class="card-actions">
+        <button id="btn-start" class="btn btn-primary" data-i18n="landing.start">Kezdjük!</button>
+      </div>
+    </div>
+
+    <!-- QUESTION -->
+    <div id="card-question" class="card hidden">
+      <button class="btn-back" data-i18n="btn.back">Vissza</button>
+      <h2 data-i18n="question.title">Hol van az állandó lakcímed?</h2>
+      <p data-i18n="question.text">
+        Van érvényes magyarországi állandó lakcímed (lakcímkártyán szereplő cím)?
+      </p>
+      <div class="btn-group">
+        <button id="btn-yes" class="btn btn-green" data-i18n="question.yes">Igen, van magyarországi lakcímem</button>
+        <button id="btn-no" class="btn btn-outline" data-i18n="question.no">Nincs magyarországi lakcímem</button>
+      </div>
+    </div>
+
+    <!-- CONSULATE PATH: Step 1 -->
+    <div id="card-consulate1" class="card hidden">
+      <button class="btn-back" data-i18n="btn.back">Vissza</button>
+      <h2 data-i18n="consulate1.title">Konzulátusi szavazás</h2>
+      <p data-i18n="consulate1.text">
+        Mivel van magyarországi lakcímed, a San Francisco-i főkonzulátuson szavazhatsz személyesen.
+      </p>
+      <div class="info-box deadline">
+        <strong data-i18n="consulate1.deadline">Regisztrációs határidő: 2026. április 2.</strong>
+      </div>
+      <p data-i18n="consulate1.detail">
+        A névjegyzékbe vételi kérelmet a Nemzeti Választási Irodánál kell benyújtani legkésőbb 2026. április 2-ig.
+      </p>
+      <div class="card-actions">
+        <button id="btn-consulate1-next" class="btn btn-primary" data-i18n="consulate1.next">Tovább – Helyszín és időpont</button>
+      </div>
+    </div>
+
+    <!-- CONSULATE PATH: Step 2 -->
+    <div id="card-consulate2" class="card hidden">
+      <button class="btn-back" data-i18n="btn.back">Vissza</button>
+      <h2 data-i18n="consulate2.title">Helyszín és tudnivalók</h2>
+      <div class="info-box">
+        <strong data-i18n="consulate2.location">Helyszín: Magyar Főkonzulátus, Santa Clara</strong>
+      </div>
+      <div class="info-box">
+        <strong data-i18n="consulate2.date">Dátum: 2026. április 11. (szombat)</strong>
+      </div>
+      <div class="info-box">
+        <strong data-i18n="consulate2.time">Nyitvatartás: 6:00 – 19:00</strong>
+      </div>
+      <div class="info-box deadline">
+        <strong data-i18n="consulate2.bring">Hozd magaddal az érvényes személyi igazolványodat vagy útleveledet!</strong>
+      </div>
+      <div class="card-actions">
+        <button id="btn-consulate2-next" class="btn btn-primary" data-i18n="consulate2.next">Tovább – Mit szeretnél?</button>
+      </div>
+    </div>
+
+    <!-- MAIL PATH: Step 1 -->
+    <div id="card-mail1" class="card hidden">
+      <button class="btn-back" data-i18n="btn.back">Vissza</button>
+      <h2 data-i18n="mail1.title">Levélszavazás</h2>
+      <p data-i18n="mail1.text">
+        Magyarországi lakcím nélkül levélben szavazhatsz. Ehhez regisztrálnod kell a mo.hu oldalon.
+      </p>
+      <div class="info-box deadline">
+        <strong data-i18n="mail1.deadline">Regisztrációs határidő: 2026. március 18.</strong>
+      </div>
+      <p data-i18n="mail1.detail">
+        A regisztráció a mo.hu-n (ügyfélkapu) keresztül történik. A levélszavazó csomagot postán kapod meg a megadott címre.
+      </p>
+      <div class="card-actions">
+        <button id="btn-mail1-next" class="btn btn-primary" data-i18n="mail1.next">Tovább – Fontos tudnivalók</button>
+      </div>
+    </div>
+
+    <!-- MAIL PATH: Step 2 -->
+    <div id="card-mail2" class="card hidden">
+      <button class="btn-back" data-i18n="btn.back">Vissza</button>
+      <h2 data-i18n="mail2.title">Fontos tudnivalók</h2>
+      <div class="info-box">
+        <strong data-i18n="mail2.sincerity">A levélben csak pártlistára szavazhatsz (nem egyéni jelöltre).</strong>
+      </div>
+      <div class="info-box deadline">
+        <strong data-i18n="mail2.sincerity2">Ha április 5-ig nem kaptad meg a levélszavazó csomagot, kérj pótlást a valasztas.hu oldalon!</strong>
+      </div>
+      <div class="info-box">
+        <strong data-i18n="mail2.sincerity3">A kitöltött szavazólapot a mellékelt válaszborítékban kell visszaküldeni legkésőbb április 9-ig.</strong>
+      </div>
+      <div class="card-actions">
+        <button id="btn-mail2-next" class="btn btn-primary" data-i18n="mail2.next">Tovább – Mit szeretnél?</button>
+      </div>
+    </div>
+
+    <!-- MENU -->
+    <div id="card-menu" class="card hidden">
+      <button class="btn-back" data-i18n="btn.back">Vissza</button>
+      <h2 data-i18n="menu.title">Mit szeretnél?</h2>
+      <p data-i18n="menu.text">Válaszd ki, miben segíthetünk!</p>
+      <div class="btn-group">
+        <button id="btn-menu-signup" class="btn btn-green" data-i18n="menu.signup">Feliratkozás értesítőre</button>
+        <button id="btn-menu-helprequest" class="btn btn-primary" data-i18n="menu.helprequest">Segítségkérés</button>
+        <button id="btn-menu-carpool" class="btn btn-primary" data-i18n="menu.carpool">Közös utazás a konzulátusra</button>
+        <button id="btn-menu-contact" class="btn btn-outline" data-i18n="menu.contact">Kapcsolat / Kérdés</button>
+      </div>
+    </div>
+
+    <!-- SIGNUP -->
+    <div id="card-signup" class="card hidden">
+      <button class="btn-back" data-i18n="btn.back">Vissza</button>
+      <h2 data-i18n="signup.title">Értesítő lista</h2>
+      <p data-i18n="signup.text">
+        Iratkozz fel, hogy emlékeztetőket és fontos információkat kapj a szavazásról!
+      </p>
+      <div id="signup-msg" class="form-message"></div>
+      <form id="signup-form">
+        <div class="form-group">
+          <label data-i18n="signup.name">Név</label>
+          <input type="text" name="name" required>
+        </div>
+        <div class="form-group">
+          <label data-i18n="signup.email">Email cím</label>
+          <input type="email" name="email" required>
+        </div>
+        <div class="form-group">
+          <label data-i18n="signup.phone">Telefon (opcionális)</label>
+          <input type="tel" name="phone">
+        </div>
+        <div class="card-actions">
+          <button type="submit" class="btn btn-green" data-i18n="signup.submit">Feliratkozás</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- HELP REQUEST -->
+    <div id="card-helprequest" class="card hidden">
+      <button class="btn-back" data-i18n="btn.back">Vissza</button>
+      <h2 data-i18n="helprequest.title">Segítségkérés</h2>
+      <p data-i18n="helprequest.text">Írd le, miben segíthetünk a szavazással kapcsolatban!</p>
+      <div id="helprequest-msg" class="form-message"></div>
+      <form id="helprequest-form">
+        <div class="form-group">
+          <label data-i18n="helprequest.name">Név</label>
+          <input type="text" name="name" required>
+        </div>
+        <div class="form-group">
+          <label data-i18n="helprequest.email">Email cím</label>
+          <input type="email" name="email" required>
+        </div>
+        <div class="form-group">
+          <label data-i18n="helprequest.phone">Telefon (opcionális)</label>
+          <input type="tel" name="phone">
+        </div>
+        <div class="form-group">
+          <label data-i18n="helprequest.message">Miben segíthetünk?</label>
+          <textarea name="message" required></textarea>
+        </div>
+        <div class="card-actions">
+          <button type="submit" class="btn btn-green" data-i18n="helprequest.submit">Segítségkérés elküldése</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- CARPOOL -->
+    <div id="card-carpool" class="card hidden">
+      <button class="btn-back" data-i18n="btn.back">Vissza</button>
+      <h2 data-i18n="carpool.title">Közös utazás</h2>
+      <p data-i18n="carpool.text">Ajánlj fel fuvart vagy keress társat a konzulátusra!</p>
+      <div id="carpool-msg" class="form-message"></div>
+      <form id="carpool-form">
+        <div class="form-group">
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" name="carpool_type" value="offer" checked>
+              <span data-i18n="carpool.type.offer">Fuvart ajánlok</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="carpool_type" value="seek">
+              <span data-i18n="carpool.type.seek">Fuvart keresek</span>
+            </label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label data-i18n="carpool.name">Név</label>
+          <input type="text" name="name" required>
+        </div>
+        <div class="form-group">
+          <label data-i18n="carpool.email">Email cím</label>
+          <input type="email" name="email" required>
+        </div>
+        <div class="form-group">
+          <label data-i18n="carpool.phone">Telefon (opcionális)</label>
+          <input type="tel" name="phone">
+        </div>
+        <div class="form-group">
+          <label data-i18n="carpool.starting_location">Indulási hely</label>
+          <input type="text" name="starting_location" required>
+        </div>
+        <div class="form-group" id="seats-group">
+          <label data-i18n="carpool.seats">Szabad helyek száma</label>
+          <input type="number" name="seats" min="1" max="10" value="2">
+        </div>
+        <div class="info-box">
+          <strong data-i18n="carpool.info">Az egyeztetéshez emailben keresünk meg!</strong>
+        </div>
+        <div class="card-actions">
+          <button type="submit" class="btn btn-green" data-i18n="carpool.submit">Küldés</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- CONFIRMATION: Signup -->
+    <div id="card-confirmSignup" class="card hidden">
+      <h2 data-i18n="confirmSignup.title">Köszönjük!</h2>
+      <p data-i18n="confirmSignup.text">
+        Feliratkoztál az értesítő listára. Emlékeztetőt küldünk a fontos határidők előtt.
+      </p>
+      <div class="card-actions">
+        <button class="btn btn-primary btn-back-to-menu" data-i18n="confirm.backToMenu">Vissza a menübe</button>
+        <button class="btn btn-outline btn-restart" data-i18n="confirm.restart">Vissza a kezdőlapra</button>
+      </div>
+    </div>
+
+    <!-- CONFIRMATION: Help -->
+    <div id="card-confirmHelp" class="card hidden">
+      <h2 data-i18n="confirmHelp.title">Köszönjük!</h2>
+      <p data-i18n="confirmHelp.text">
+        Megkaptuk a segítségkérésedet. Hamarosan felvesszük veled a kapcsolatot!
+      </p>
+      <div class="card-actions">
+        <button class="btn btn-primary btn-back-to-menu" data-i18n="confirm.backToMenu">Vissza a menübe</button>
+        <button class="btn btn-outline btn-restart" data-i18n="confirm.restart">Vissza a kezdőlapra</button>
+      </div>
+    </div>
+
+    <!-- CONFIRMATION: Carpool -->
+    <div id="card-confirmCarpool" class="card hidden">
+      <h2 data-i18n="confirmCarpool.title">Köszönjük!</h2>
+      <p data-i18n="confirmCarpool.text">
+        Megkaptuk a jelentkezésedet a közös utazásra. Emailben egyeztetünk a részletekről!
+      </p>
+      <div class="card-actions">
+        <button class="btn btn-primary btn-back-to-menu" data-i18n="confirm.backToMenu">Vissza a menübe</button>
+        <button class="btn btn-outline btn-restart" data-i18n="confirm.restart">Vissza a kezdőlapra</button>
+      </div>
+    </div>
+
+    <!-- CONTACT -->
+    <div id="card-contact" class="card hidden">
+      <button class="btn-back" data-i18n="btn.back">Vissza</button>
+      <h2 data-i18n="contact.title">Kapcsolat</h2>
+      <p data-i18n="contact.text">Kérdésed van? Írj nekünk!</p>
+      <div id="contact-msg" class="form-message"></div>
+      <form id="contact-form">
+        <div class="form-group">
+          <label data-i18n="contact.name">Név</label>
+          <input type="text" name="name" required>
+        </div>
+        <div class="form-group">
+          <label data-i18n="contact.email">Email cím</label>
+          <input type="email" name="email" required>
+        </div>
+        <div class="form-group">
+          <label data-i18n="contact.message">Üzenet</label>
+          <textarea name="message" required></textarea>
+        </div>
+        <div class="card-actions">
+          <button type="submit" class="btn btn-green" data-i18n="contact.submit">Küldés</button>
+        </div>
+      </form>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p data-i18n="footer.text">Az Öbölben Szavazók – Magyar közösségi kezdeményezés, SF Bay Area</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/translations.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>

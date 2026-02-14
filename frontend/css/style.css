@@ -1,0 +1,351 @@
+/* === Base Reset & Variables === */
+:root {
+  --red: #CE2939;
+  --green: #477050;
+  --white: #FFFFFF;
+  --light-bg: #F9F7F3;
+  --text: #2D2D2D;
+  --text-light: #666;
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  --radius: 16px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--light-bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* === Header === */
+.header {
+  background: linear-gradient(135deg, var(--red) 0%, #a82030 100%);
+  color: var(--white);
+  padding: 1.5rem 2rem;
+  text-align: center;
+  position: relative;
+}
+
+.header h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+}
+
+.header p {
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+.lang-btn {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.5rem;
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--white);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.2s;
+}
+
+.lang-btn:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+/* === Hungarian Stripe === */
+.hu-stripe {
+  display: flex;
+  height: 6px;
+}
+
+.hu-stripe span {
+  flex: 1;
+}
+
+.hu-stripe .stripe-red { background: var(--red); }
+.hu-stripe .stripe-white { background: var(--white); }
+.hu-stripe .stripe-green { background: var(--green); }
+
+/* === Main Content === */
+.main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem 1rem;
+}
+
+/* === Cards === */
+.card {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 2.5rem;
+  max-width: 560px;
+  width: 100%;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.card.hidden {
+  display: none;
+}
+
+.card.active {
+  display: block;
+}
+
+.card.slide-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* === Back Button === */
+.btn-back {
+  background: none;
+  border: none;
+  color: var(--text-light);
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0.2rem 0;
+  margin-bottom: 0.8rem;
+  display: inline-block;
+  transition: color 0.2s;
+}
+
+.btn-back::before {
+  content: "\2190\00a0";
+}
+
+.btn-back:hover {
+  color: var(--red);
+}
+
+.card h2 {
+  color: var(--red);
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.card p {
+  line-height: 1.7;
+  margin-bottom: 1rem;
+  color: var(--text);
+}
+
+/* === Info boxes === */
+.info-box {
+  background: #f0f7f1;
+  border-left: 4px solid var(--green);
+  padding: 1rem 1.2rem;
+  border-radius: 0 8px 8px 0;
+  margin-bottom: 1rem;
+}
+
+.info-box.deadline {
+  background: #fef3f3;
+  border-left-color: var(--red);
+}
+
+.info-box strong {
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+/* === Buttons === */
+.btn {
+  display: inline-block;
+  padding: 0.85rem 2rem;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  text-align: center;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn-primary {
+  background: var(--red);
+  color: var(--white);
+}
+
+.btn-green {
+  background: var(--green);
+  color: var(--white);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--red);
+  border: 2px solid var(--red);
+}
+
+.btn-outline:hover {
+  background: var(--red);
+  color: var(--white);
+}
+
+/* Button group for question card */
+.btn-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
+}
+
+.btn-group .btn {
+  width: 100%;
+}
+
+.card-actions {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+/* === Forms === */
+.form-group {
+  margin-bottom: 1.2rem;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--green);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* === Radio Group (Carpool) === */
+.radio-group {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.2rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: border-color 0.2s, background 0.2s;
+  flex: 1;
+  justify-content: center;
+}
+
+.radio-label:has(input:checked) {
+  border-color: var(--green);
+  background: #f0f7f1;
+}
+
+.radio-label input[type="radio"] {
+  accent-color: var(--green);
+  width: 18px;
+  height: 18px;
+}
+
+.form-message {
+  padding: 0.7rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  display: none;
+}
+
+.form-message.success {
+  display: block;
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.form-message.error {
+  display: block;
+  background: #ffebee;
+  color: #c62828;
+}
+
+/* === Footer === */
+.footer {
+  text-align: center;
+  padding: 1.5rem;
+  color: var(--text-light);
+  font-size: 0.85rem;
+}
+
+/* === Responsive === */
+@media (max-width: 600px) {
+  .header {
+    padding: 1.2rem 1rem;
+  }
+
+  .header h1 {
+    font-size: 1.3rem;
+  }
+
+  .lang-btn {
+    position: static;
+    margin-top: 0.8rem;
+  }
+
+  .card {
+    padding: 1.5rem;
+    border-radius: 12px;
+  }
+
+  .card h2 {
+    font-size: 1.25rem;
+  }
+
+  .main {
+    padding: 1rem 0.5rem;
+  }
+}

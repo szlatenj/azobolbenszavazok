@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(psql:*)",
+      "Bash(ssh:*)",
+      "Bash(python -m alembic upgrade:*)",
+      "Bash(python:*)",
+      "Bash(curl:*)",
+      "Bash(gh auth:*)",
+      "Bash(git status:*)",
+      "Bash(git branch:*)",
+      "Bash(git push:*)",
+      "Bash(cloudflared --version:*)"
+    ]
+  }
+}

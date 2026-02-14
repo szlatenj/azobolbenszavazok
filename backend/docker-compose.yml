@@ -1,0 +1,26 @@
+services:
+  api:
+    build: .
+    container_name: voting-guide-api
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "8000:8000"
+    networks:
+      - voting-net
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: voting-guide-tunnel
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+    networks:
+      - voting-net
+    depends_on:
+      - api
+
+networks:
+  voting-net:
+    driver: bridge
