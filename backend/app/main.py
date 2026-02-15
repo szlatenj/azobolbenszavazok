@@ -29,7 +29,9 @@ app.include_router(contact.router, prefix="/api")
 app.include_router(helprequest.router, prefix="/api")
 app.include_router(carpool.router, prefix="/api")
 
-# Serve frontend static files
-frontend_dir = Path(__file__).resolve().parent.parent.parent / "frontend"
+# Serve frontend static files (check Docker path first, then local dev path)
+frontend_dir = Path("/frontend")
+if not frontend_dir.is_dir():
+    frontend_dir = Path(__file__).resolve().parent.parent.parent / "frontend"
 if frontend_dir.is_dir():
     app.mount("/", StaticFiles(directory=str(frontend_dir), html=True), name="frontend")
