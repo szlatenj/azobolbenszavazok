@@ -168,7 +168,7 @@ const translations = {
     // Consulate path
     "consulate1.title": "Vote at the Consulate",
     "consulate1.text":
-      "Since you have a Hungarian address, you can vote in person at the San Francisco Consulate General.",
+      "Since you have a Hungarian address, you can vote in person at the Hungarian Consulate in Santa Clara.",
     "consulate1.deadline": "Registration deadline: April 2, 2026",
     "consulate1.detail":
       "You must submit a voter registration request to the National Election Office by April 2, 2026.",
@@ -176,7 +176,7 @@ const translations = {
     "consulate1.next": "Next – Location & Schedule",
 
     "consulate2.title": "Location & Details",
-    "consulate2.location": "Location: Hungarian Consulate General, Santa Clara",
+    "consulate2.location": "Location: Hungarian Consulate, Santa Clara",
     "consulate2.maplink": "5201 Great America Pkwy, Suite 320, Santa Clara, CA 95054",
     "consulate2.date": "Date: April 11, 2026 (Saturday)",
     "consulate2.time": "Hours: 6:00 AM – 7:00 PM",
