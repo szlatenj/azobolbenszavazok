@@ -25,7 +25,7 @@ const translations = {
     "consulate1.deadline": "Regisztrációs határidő: 2026. április 2.",
     "consulate1.detail":
       "A névjegyzékbe vételi kérelmet a Nemzeti Választási Irodánál kell benyújtani legkésőbb 2026. április 2-ig.",
-    "consulate1.register": "Regisztráció (mo.hu)",
+    "consulate1.register": "Regisztráció",
     "consulate1.next": "Tovább – Helyszín és időpont",
 
     "consulate2.title": "Helyszín és tudnivalók",
@@ -43,7 +43,7 @@ const translations = {
     "mail1.deadline": "Regisztrációs határidő: 2026. március 18.",
     "mail1.detail":
       "A regisztráció a mo.hu-n (ügyfélkapu) keresztül történik. A levélszavazó csomagot postán kapod meg a megadott címre.",
-    "mail1.register": "Regisztráció (mo.hu)",
+    "mail1.register": "Regisztráció",
     "mail1.next": "Tovább – Fontos tudnivalók",
 
     "mail2.title": "Fontos tudnivalók",
@@ -172,7 +172,7 @@ const translations = {
     "consulate1.deadline": "Registration deadline: April 2, 2026",
     "consulate1.detail":
       "You must submit a voter registration request to the National Election Office by April 2, 2026.",
-    "consulate1.register": "Register (mo.hu)",
+    "consulate1.register": "Register",
     "consulate1.next": "Next – Location & Schedule",
 
     "consulate2.title": "Location & Details",
@@ -190,7 +190,7 @@ const translations = {
     "mail1.deadline": "Registration deadline: March 18, 2026",
     "mail1.detail":
       "Registration is done through mo.hu (government portal). Your ballot package will be mailed to the address you provide.",
-    "mail1.register": "Register (mo.hu)",
+    "mail1.register": "Register",
     "mail1.next": "Next – Important Details",
 
     "mail2.title": "Important Details",
