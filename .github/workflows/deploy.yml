@@ -1,0 +1,15 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Pull latest code
+        run: cd /opt/azobolbenszavazok && git pull origin main
+
+      - name: Build and restart containers
+        run: cd /opt/azobolbenszavazok && docker compose build && docker compose up -d
