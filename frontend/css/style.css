@@ -164,6 +164,18 @@ body {
   margin-bottom: 0.3rem;
 }
 
+/* === Landing Summary === */
+.landing-summary {
+  margin: 1.2rem 0;
+}
+
+.landing-summary .info-box span {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.9rem;
+  color: var(--text-light);
+}
+
 /* === Map Link === */
 .map-link {
   display: block;

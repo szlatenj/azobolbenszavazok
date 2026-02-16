@@ -9,6 +9,14 @@ const translations = {
     "landing.headline": "Segítünk szavazni!",
     "landing.description":
       "A 2026-os magyar parlamenti választás április 11-én lesz. Ha az SF Bay Area-ban élsz, kétféleképpen szavazhatsz. Segítünk kideríteni, melyik a Te utad!",
+    "landing.summary.election": "🗳️ Választás napja: 2026. április 11. (szombat)",
+    "landing.summary.consulate": "🏛️ Konzulátusi szavazás",
+    "landing.summary.consulate.detail":
+      "Ha van magyarországi lakcímed, személyesen szavazhatsz a Santa Clara-i alkonzulátuson. Regisztrációs határidő: április 2.",
+    "landing.summary.mail": "✉️ Levélszavazás",
+    "landing.summary.mail.detail":
+      "Ha nincs magyarországi lakcímed, levélben szavazhatsz. Regisztrációs határidő: március 18.",
+    "landing.summary.sincerity": "⚠️ Fontos: minden szavazáshoz előzetes regisztráció szükséges!",
     "landing.start": "Kezdjük!",
 
     // Question
@@ -156,6 +164,14 @@ const translations = {
     "landing.headline": "We help you vote!",
     "landing.description":
       "The 2026 Hungarian parliamentary election is on April 11. If you live in the SF Bay Area, there are two ways to vote. Let us help you figure out which one is right for you!",
+    "landing.summary.election": "🗳️ Election day: April 11, 2026 (Saturday)",
+    "landing.summary.consulate": "🏛️ Vote at the Consulate",
+    "landing.summary.consulate.detail":
+      "If you have a Hungarian address, you can vote in person at the Consulate in Santa Clara. Registration deadline: April 2.",
+    "landing.summary.mail": "✉️ Vote by Mail",
+    "landing.summary.mail.detail":
+      "If you don't have a Hungarian address, you can vote by mail. Registration deadline: March 18.",
+    "landing.summary.sincerity": "⚠️ Important: all voting requires prior registration!",
     "landing.start": "Let's go!",
 
     // Question
