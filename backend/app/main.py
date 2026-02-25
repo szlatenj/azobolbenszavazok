@@ -1,7 +1,8 @@
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
@@ -22,6 +23,13 @@ app.add_middleware(
     allow_methods=["GET", "POST"],
     allow_headers=["Content-Type"],
 )
+
+@app.middleware("http")
+async def subdomain_redirect(request: Request, call_next):
+    host = request.headers.get("host", "")
+    if host.startswith("szamoljunk.") and request.url.path == "/":
+        return RedirectResponse(url="/sim/", status_code=302)
+    return await call_next(request)
 
 app.include_router(health.router, prefix="/api")
 app.include_router(signup.router, prefix="/api")
