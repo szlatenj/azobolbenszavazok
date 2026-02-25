@@ -90,6 +90,7 @@ async def get_simulation_config():
         urban_turnout_shift=config.urban_turnout_shift,
         rural_turnout_shift=config.rural_turnout_shift,
         budapest_extra_swing=config.budapest_extra_swing,
+        ticket_splits=dict(config.ticket_splits),
         majority_threshold=config.majority_threshold,
         supermajority_threshold=config.supermajority_threshold,
         single_party_threshold=config.single_party_threshold,

@@ -103,6 +103,10 @@ def _apply_input_overrides(
     if updates:
         config = config.model_copy(update=updates)
 
+    # Ticket split overrides
+    if input_data.ticket_splits is not None:
+        config = config.model_copy(update={"ticket_splits": input_data.ticket_splits})
+
     # Pollster weight/house effect overrides
     if input_data.pollster_weights or input_data.pollster_house_effects:
         new_configs = dict(config.pollster_configs)
@@ -232,10 +236,26 @@ def run_simulation(
         district_shares, district_total_votes, party_names
     )
 
-    # Step 6: Compute list votes
+    # Step 6: Compute list votes (with optional ticket splitting)
     list_totals_2022 = _load_national_list_totals(config.data_dir)
     total_national_list_votes = sum(list_totals_2022.values())
-    raw_list_votes = national_shares * total_national_list_votes
+
+    if config.ticket_splits:
+        list_shares = national_shares.copy()
+        for from_party, split_info in config.ticket_splits.items():
+            to_party = split_info.get("to", "")
+            pct = float(split_info.get("pct", 0.0))
+            if pct > 0 and to_party and from_party in party_names and to_party in party_names:
+                from_idx = party_names.index(from_party)
+                to_idx = party_names.index(to_party)
+                transfer = pct * list_shares[:, from_idx]
+                list_shares[:, from_idx] -= transfer
+                list_shares[:, to_idx] += transfer
+        list_shares = np.clip(list_shares, 0.001, None)
+        list_shares /= list_shares.sum(axis=1, keepdims=True)
+        raw_list_votes = list_shares * total_national_list_votes
+    else:
+        raw_list_votes = national_shares * total_national_list_votes
 
     # Step 7: Get party thresholds
     party_thresholds = _get_party_thresholds(party_names, config)

@@ -12,6 +12,7 @@ const state = {
   params: {},
   pollsterWeights: {},
   pollsterHouseEffects: {},
+  ticketSplits: {},
 };
 
 // ── Initialization ──────────────────────────────────────────────────
@@ -60,6 +61,14 @@ function initFromConfig(config) {
     budapest_extra_swing: config.budapest_extra_swing,
   };
 
+  // Init ticket splits from config (empty by default)
+  state.ticketSplits = {};
+  if (config.ticket_splits) {
+    Object.entries(config.ticket_splits).forEach(([from, info]) => {
+      state.ticketSplits[from] = { to: info.to || '', pct: info.pct || 0 };
+    });
+  }
+
   // Init party toggles and shares
   config.parties.forEach(p => {
     state.activeParties[p.short] = true;
@@ -74,6 +83,7 @@ function initFromConfig(config) {
 
   renderPartyControls(config.parties);
   renderParamControls();
+  renderTicketSplitControls();
   renderPollsterControls(config.pollsters);
 }
 
@@ -159,6 +169,17 @@ function buildSimParams() {
     pollster_weights: { ...state.pollsterWeights },
     pollster_house_effects: { ...state.pollsterHouseEffects },
   };
+
+  // Ticket splits — only include entries with a target and pct > 0
+  const activeSplits = {};
+  Object.entries(state.ticketSplits).forEach(([from, info]) => {
+    if (info.to && info.pct > 0) {
+      activeSplits[from] = { to: info.to, pct: info.pct };
+    }
+  });
+  if (Object.keys(activeSplits).length > 0) {
+    params.ticket_splits = activeSplits;
+  }
 
   const seed = document.getElementById('random-seed')?.value;
   if (seed) params.random_seed = parseInt(seed);
@@ -387,12 +408,69 @@ function resetDefaults() {
   };
   renderParamControls();
 
+  // Reset ticket splits
+  state.ticketSplits = {};
+  renderTicketSplitControls();
+
   // Reset pollster weights
   Object.entries(state.config.pollsters).forEach(([name, info]) => {
     state.pollsterWeights[name] = info.quality_weight;
     state.pollsterHouseEffects[name] = { ...info.house_effects };
   });
   renderPollsterControls(state.config.pollsters);
+}
+
+// ── Ticket Split Controls (Tab 3) ────────────────────────────────────
+
+function renderTicketSplitControls() {
+  const container = document.getElementById('ticket-split-container');
+  if (!container || !state.config) return;
+
+  const parties = state.config.parties;
+  let html = '';
+
+  parties.forEach(p => {
+    const color = getPartyColor(p.short);
+    const current = state.ticketSplits[p.short] || { to: '', pct: 0 };
+    const pctDisplay = (current.pct * 100).toFixed(0);
+
+    html += `<div class="param-row ticket-split-row">
+      <span class="param-label">
+        <span class="color-dot" style="background:${color}"></span>
+        <strong>${p.short}</strong> →
+      </span>
+      <select class="ticket-split-to" id="ts-to-${p.short}"
+        onchange="updateTicketSplit('${p.short}')">
+        <option value="">—</option>
+        ${parties.filter(op => op.short !== p.short).map(op =>
+          `<option value="${op.short}" ${op.short === current.to ? 'selected' : ''}>${op.short}</option>`
+        ).join('')}
+      </select>
+      <input type="range" class="ticket-split-pct" id="ts-pct-${p.short}"
+        min="0" max="30" step="1" value="${pctDisplay}"
+        oninput="updateTicketSplit('${p.short}')">
+      <span class="param-val" id="ts-val-${p.short}">${pctDisplay}%</span>
+    </div>`;
+  });
+
+  container.innerHTML = html;
+}
+
+function updateTicketSplit(party) {
+  const toEl = document.getElementById(`ts-to-${party}`);
+  const pctEl = document.getElementById(`ts-pct-${party}`);
+  const valEl = document.getElementById(`ts-val-${party}`);
+  if (!toEl || !pctEl) return;
+
+  const to = toEl.value;
+  const pct = parseInt(pctEl.value) / 100;
+  valEl.textContent = parseInt(pctEl.value) + '%';
+
+  if (to && pct > 0) {
+    state.ticketSplits[party] = { to, pct };
+  } else {
+    delete state.ticketSplits[party];
+  }
 }
 
 // ── Pollster Controls (Tab 4) ───────────────────────────────────────

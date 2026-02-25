@@ -67,6 +67,11 @@ class SimulationConfig(BaseModel):
     rural_turnout_shift: float = 0.0
     budapest_extra_swing: float = 0.0
 
+    # Ticket splitting (list vs SMD divergence)
+    # Format: {"from_party": {"to": "target_party", "pct": 0.05}}
+    # e.g. 5% of mi_hazank SMD voters vote for "other" on the list
+    ticket_splits: dict[str, dict] = Field(default_factory=dict)
+
     # Coordination scenario
     coordination_scenario: str = "fragmented"
 

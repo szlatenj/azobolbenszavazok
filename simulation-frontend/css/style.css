@@ -247,6 +247,12 @@ tr:hover td { background: #fafbfc; }
 .param-row input[type="range"] { flex: 1; }
 .param-val { min-width: 55px; text-align: right; font-size: 0.85rem; font-weight: 600; color: #333; }
 
+.param-group-desc { font-size: 0.82rem; color: #777; margin: -0.4rem 0 0.8rem 0; }
+
+.ticket-split-row .param-label { min-width: 130px; display: flex; align-items: center; gap: 0.3rem; }
+.ticket-split-to { width: 90px; flex-shrink: 0; }
+.ticket-split-pct { flex: 1; }
+
 select {
   padding: 0.4rem 0.8rem;
   border: 1px solid #ccc;

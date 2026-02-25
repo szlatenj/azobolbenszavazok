@@ -31,6 +31,9 @@ class SimulationInput(BaseModel):
     rural_turnout_shift: float | None = None
     budapest_extra_swing: float | None = None
 
+    # Ticket splitting: {"from_party": {"to": "target_party", "pct": 0.05}}
+    ticket_splits: dict[str, dict] | None = None
+
     # Correlations
     fidesz_opposition_correlation: float | None = None
     small_party_correlation: float | None = None
@@ -115,6 +118,7 @@ class SimulationDefaults(BaseModel):
     urban_turnout_shift: float
     rural_turnout_shift: float
     budapest_extra_swing: float
+    ticket_splits: dict[str, dict]
     majority_threshold: int
     supermajority_threshold: int
     single_party_threshold: float

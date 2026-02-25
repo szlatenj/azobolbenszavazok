@@ -80,6 +80,10 @@ const translations = {
   'rural_turnout_shift': { hu: 'Videki reszveteli eltolas', en: 'Rural Turnout Shift' },
   'budapest_extra_swing': { hu: 'Budapest extra ellenzeki swing', en: 'Budapest Extra Opposition Swing' },
 
+  // Ticket splitting
+  'ticket_splitting': { hu: 'Szavazatmegosztás (lista vs. OEVK)', en: 'Ticket Splitting (List vs SMD)' },
+  'ticket_split_desc': { hu: 'OEVK szavazók hány %-a szavaz más pártra a listán?', en: 'What % of SMD voters cast their list vote for a different party?' },
+
   // Pollster tab
   'pollster_title': { hu: 'Kozvelemenykutatok sulyozasa', en: 'Pollster Weights & House Effects' },
   'pollster_name': { hu: 'Kutato', en: 'Pollster' },

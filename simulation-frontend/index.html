@@ -213,6 +213,13 @@
     </div>
   </div>
 
+  <!-- Ticket Splitting -->
+  <div class="param-group">
+    <h3 data-i18n="ticket_splitting">Szavazatmegosztas (lista vs. OEVK)</h3>
+    <p class="param-group-desc" data-i18n="ticket_split_desc">OEVK szavazok hany %-a szavaz mas partra a listan?</p>
+    <div id="ticket-split-container"></div>
+  </div>
+
   <!-- Simulation Settings -->
   <div class="param-group">
     <h3 data-i18n="sim_settings">Szimulacio beallitasok</h3>
@@ -342,7 +349,13 @@
     $$ V_d' = V_d \cdot \bigl(1 + \delta_{\text{urban}} \cdot u_d + \delta_{\text{rural}} \cdot (1 - u_d)\bigr) $$
     <p>ahol $\delta_{\text{urban}}$ es $\delta_{\text{rural}}$ a reszveteli valtozas parameterei.</p>
 
-    <h3>7. OEVK szimulacio es toredekszavazatok</h3>
+    <h3>7. Szavazatmegosztas (lista vs. OEVK elteres)</h3>
+    <p>A valasztok ket szavazatot adnak le: egyet az egyeni jeloltre (OEVK), egyet az orszagos listra. Ezek elterhetnek &mdash; peldaul egy Mi Hazank-szavazo a keruletben mas jeloltre (pl. &bdquo;egyeb&rdquo;) szavazhat, de a listan a Mi Hazankra. A modell ezt ugy kezeli, hogy minden parthoz megadhato egy celpart es egy szazalek: az OEVK-szavazok $f_k$ hanyada a listan a celpartra szavaz.</p>
+    <p>A listai szavazataranyok az OEVK-bazisbol szarmaznak, modositva az atszavazasokkal:</p>
+    $$ \text{lista}_k^{(i)} = \pi_k^{(i)} - f_k \cdot \pi_k^{(i)} + \sum_{j:\,\text{cel}(j)=k} f_j \cdot \pi_j^{(i)} $$
+    <p>ahol $f_k \in [0, 0{,}30]$ a $k$ part OEVK-szavazoibol a celpartra atszavazok aranya. Peldaul ha $f_{\text{Mi Hazank}} = 0{,}10$ es cel $=$ egyeb, akkor a Mi Hazank OEVK-szavazoibol 10% a listan az &bdquo;egyeb&rdquo; partra szavaz. Alapertek: 0 (nincs atszavazas).</p>
+
+    <h3>8. OEVK szimulacio es toredekszavazatok</h3>
     <p>Minden keruletben a legtobb szavazatot kapo jelolt nyer. A toredekszavazatok:</p>
     <ul>
       <li><strong>Vesztes jeloltek</strong>: osszes szavazatuk toredekszavazat.</li>
@@ -350,7 +363,7 @@
     </ul>
     $$ F_{\text{winner}} = \max\bigl(v_{\text{winner}} - v_{\text{2nd}} - 1,\; 0\bigr) $$
 
-    <h3>8. Listai mandatumelosztas (d'Hondt)</h3>
+    <h3>9. Listai mandatumelosztas (d'Hondt)</h3>
     <p>Kuszobertekek a nyers listai szavazatokra (toredek hozzaadasa elott):</p>
     <ul>
       <li>Egy part: <strong>5%</strong></li>
@@ -361,7 +374,7 @@
     $$ \text{kvociens}_{k,s} = \frac{E_k}{s + 1}, \quad s = 0, 1, 2, \ldots $$
     <p>A 93 legnagyobb kvociens kap mandatumot.</p>
 
-    <h3>9. Vegeredmeny</h3>
+    <h3>10. Vegeredmeny</h3>
     $$ \text{ossz. mandatum}_k = \text{OEVK}_k + \text{listai}_k $$
     <p>A $N$ szimulaciobol szamitjuk: mediant, 90%-os konfidencia-intervallumot ($P_5$&ndash;$P_{95}$), gyozelmi valoszinuseget ($\geq 100$ mandatum), es ketharmados eselyt ($\geq 133$).</p>
 
@@ -454,7 +467,13 @@
     $$ V_d' = V_d \cdot \bigl(1 + \delta_{\text{urban}} \cdot u_d + \delta_{\text{rural}} \cdot (1 - u_d)\bigr) $$
     <p>where $\delta_{\text{urban}}$ and $\delta_{\text{rural}}$ are user-configurable turnout shift parameters. This models scenarios like "higher urban mobilization benefits opposition parties."</p>
 
-    <h3>7. SMD Simulation &amp; Fragment Votes</h3>
+    <h3>7. Ticket Splitting (List vs SMD Divergence)</h3>
+    <p>Hungarian voters cast two ballots: one for a district (SMD) candidate and one for a national party list. These can diverge &mdash; e.g., some Mi Haz&aacute;nk SMD voters might vote for an "other" candidate in the district but cast their list vote for Mi Haz&aacute;nk. The model allows specifying, for each party, a target party and the fraction of SMD voters who split their list vote.</p>
+    <p>List vote shares are derived from the SMD baseline, adjusted by vote transfers:</p>
+    $$ \text{list}_k^{(i)} = \pi_k^{(i)} - f_k \cdot \pi_k^{(i)} + \sum_{j:\,\text{target}(j)=k} f_j \cdot \pi_j^{(i)} $$
+    <p>where $f_k \in [0, 0.30]$ is the fraction of party $k$'s SMD voters who cast their list vote for the designated target party instead. For example, if $f_{\text{Mi Hazank}} = 0.10$ with target $=$ other, then 10% of Mi Haz&aacute;nk's SMD supporters vote "other" on the list. Default: 0 (no splitting).</p>
+
+    <h3>8. SMD Simulation &amp; Fragment Votes</h3>
     <p>In each district, the party with the most votes wins the seat. Fragment votes (<em>toredekszavazatok</em>), a unique feature of the Hungarian system, are computed as:</p>
     <ul>
       <li><strong>Losing candidates</strong>: all their votes become fragment votes for their party's national list.</li>
@@ -463,7 +482,7 @@
     $$ F_{\text{winner}} = \max\bigl(v_{\text{winner}} - v_{\text{2nd}} - 1,\; 0\bigr) $$
     <p>This mechanism reduces the "wasted vote" problem and compensates parties that lose many districts by narrow margins.</p>
 
-    <h3>8. List Seat Allocation (d'Hondt)</h3>
+    <h3>9. List Seat Allocation (d'Hondt)</h3>
     <p>Threshold eligibility is determined from raw list votes (before adding fragment votes):</p>
     <ul>
       <li>Single party: <strong>5%</strong></li>
@@ -474,7 +493,7 @@
     $$ q_{k,s} = \frac{E_k}{s + 1}, \quad s = 0, 1, 2, \ldots $$
     <p>The 93 largest quotients across all eligible parties receive one seat each.</p>
 
-    <h3>9. Final Results</h3>
+    <h3>10. Final Results</h3>
     $$ \text{total seats}_k = \text{SMD seats}_k + \text{list seats}_k $$
     <p>From the $N$ simulations we report: the median seat count, the 90% confidence interval ($P_5$&ndash;$P_{95}$), the win probability ($\Pr[\text{seats} \geq 100]$), and the supermajority probability ($\Pr[\text{seats} \geq 133]$).</p>
 
@@ -492,6 +511,7 @@
     <tr><td>$\gamma_k$</td><td>0</td><td>Per-party urban swing (&minus;0.10 to +0.10)</td></tr>
     <tr><td>$\beta_{\text{BP}}$</td><td>0</td><td>Budapest extra opposition swing</td></tr>
     <tr><td>$\delta_{\text{urban}}, \delta_{\text{rural}}$</td><td>0</td><td>Urban/rural turnout shifts</td></tr>
+    <tr><td>$f_k$ (ticket split)</td><td>0</td><td>Fraction of party $k$'s SMD voters splitting list vote to target party (0&ndash;0.30)</td></tr>
     </table>
 
     <h3>Data Sources</h3>
