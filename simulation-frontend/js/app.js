@@ -22,15 +22,19 @@ async function init() {
   setupEventListeners();
 
   try {
-    const [config, polls] = await Promise.all([
+    const [config, polls, defaultResult] = await Promise.all([
       api.getConfig(),
       api.getPolls(),
+      api.runDefault(),
     ]);
     state.config = config;
     state.polls = polls;
     initFromConfig(config);
     renderPollsTable(polls);
-    await runSim();
+    if (defaultResult) {
+      state.result = defaultResult;
+      renderResults(defaultResult);
+    }
   } catch (err) {
     showError('Failed to load config: ' + err.message);
   }

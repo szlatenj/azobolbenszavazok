@@ -24,10 +24,20 @@ from app.simulation.schemas import (
 
 router = APIRouter(tags=["simulation"])
 
-_cached_result: SimulationResult | None = None
 _simulation_lock = threading.Lock()
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "simulation" / "data"
+
+
+def _load_precomputed() -> SimulationResult | None:
+    path = DATA_DIR / "default_result.json"
+    if path.exists():
+        with open(path, "r", encoding="utf-8") as f:
+            return SimulationResult.model_validate_json(f.read())
+    return None
+
+
+_cached_result: SimulationResult | None = _load_precomputed()
 
 
 @router.get("/simulation/config", response_model=SimulationDefaults)
@@ -128,8 +138,10 @@ async def get_simulation_summary():
 
 @router.get("/simulation/default", response_model=SimulationResult)
 async def run_default_simulation():
-    """Run a simulation with default settings and latest poll data."""
+    """Return precomputed default result, or run a fresh simulation if none exists."""
     global _cached_result
+    if _cached_result is not None:
+        return _cached_result
     if not _simulation_lock.acquire(blocking=False):
         raise HTTPException(status_code=429, detail="A simulation is already running")
     try:
