@@ -294,6 +294,13 @@ select {
   font-size: 0.85rem;
   overflow-x: auto;
 }
+.methodology .katex-display { margin: 0.8rem 0; overflow-x: auto; overflow-y: hidden; }
+.methodology ol { margin: 0.5rem 0 0.8rem 1.5rem; }
+.methodology ol li { margin-bottom: 0.4rem; }
+.params-summary-table { width: 100%; border-collapse: collapse; margin: 0.8rem 0; font-size: 0.85rem; }
+.params-summary-table th { background: #f0f0f0; text-align: left; padding: 0.4rem 0.6rem; border-bottom: 2px solid #ddd; }
+.params-summary-table td { padding: 0.4rem 0.6rem; border-bottom: 1px solid #eee; }
+.params-summary-table tr:hover { background: #f8f9fa; }
 
 /* ── Responsive ──────────────────────────────────────────────── */
 @media (max-width: 768px) {

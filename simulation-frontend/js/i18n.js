@@ -125,6 +125,16 @@ const i18n = {
     if (methuBlock && metenBlock) {
       methuBlock.style.display = this.lang === 'hu' ? 'block' : 'none';
       metenBlock.style.display = this.lang === 'en' ? 'block' : 'none';
+      // Re-render KaTeX in the newly visible block
+      if (typeof renderMathInElement === 'function') {
+        const visible = this.lang === 'hu' ? methuBlock : metenBlock;
+        renderMathInElement(visible, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+          ],
+        });
+      }
     }
   },
 

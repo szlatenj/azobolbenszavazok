@@ -7,6 +7,10 @@
   <link rel="stylesheet" href="css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
 </head>
 <body>
 
@@ -267,56 +271,104 @@
   <!-- HUNGARIAN -->
   <div id="methodology-hu" class="methodology">
     <h2>Modszertan</h2>
-    <p>Ez a szimulator Monte Carlo modszert hasznal a 2026-os magyar orszaggyulesi valasztasok elorejelzesere. A modell 20 000 szimulalt valasztast futtat le, es minden alkalommal veletlen valtozokkal modositja a kozvelemenykutatasi adatokat, hogy felmerhesse a bizonytalansagot.</p>
+    <p>Ez a szimulator Monte Carlo modszert hasznal a 2026-os magyar orszaggyulesi valasztasok elorejelzesere. A modell $N = 20\,000$ szimulalt valasztast futtat le, es minden alkalommal veletlen valtozokkal modositja a kozvelemenykutatasi adatokat, hogy felmerhesse a bizonytalansagot. A megkozelites hasonlo a Nate Silver-fele FiveThirtyEight modellhez, a magyar valasztasi rendszerre adaptialva.</p>
 
-    <h3>A magyar valasztasi rendszer</h3>
+    <h3>1. A magyar valasztasi rendszer</h3>
     <p>Az Orszaggyulesnek <strong>199 kepviseloje</strong> van:</p>
     <ul>
-      <li><strong>106 egyeni valasztokeruleti (OEVK) mandatum</strong> — tobbsegi rendszer, egy fordulo. A legtobb szavazatot kapo jelolt nyer.</li>
-      <li><strong>93 orszagos listai mandatum</strong> — aranyos elosztias a <strong>d'Hondt modszer</strong> alapjan.</li>
+      <li><strong>106 egyeni valasztokeruleti (OEVK) mandatum</strong> &mdash; tobbsegi rendszer (FPTP), egy fordulo. A legtobb szavazatot kapo jelolt nyer.</li>
+      <li><strong>93 orszagos listai mandatum</strong> &mdash; aranyos elosztas a <strong>d'Hondt modszer</strong> alapjan, toredekszavazatokkal kiegeszitve.</li>
     </ul>
 
-    <h3>Toredekszavazatok</h3>
-    <p>A listai szekek elosztasanal a partok nem csupan a listai szavazataikat kapjak meg, hanem a toredekszavazatokat is:</p>
+    <h3>2. Kozvelemenykutatas-osszesites</h3>
+    <p>Minden kozveleemnykutatas sulyozott atlaga harom tenyezo szorzata:</p>
+    $$ w_i = w_i^{\text{ido}} \cdot w_i^{\text{minta}} \cdot w_i^{\text{minoseg}} $$
+
+    <p><strong>Idoszerusegi suly</strong> &mdash; exponencialis bomlas felezesi idovel $\tau$ (alapertek: 14 nap):</p>
+    $$ w_i^{\text{ido}} = \exp\!\Bigl(-\frac{\ln 2}{\tau} \cdot \Delta t_i\Bigr) $$
+
+    <p><strong>Mintanagysag-suly:</strong></p>
+    $$ w_i^{\text{minta}} = \sqrt{\frac{n_i}{1000}} $$
+
+    <p><strong>Minosegi suly</strong> $w_i^{\text{minoseg}} \in [0, 1]$: kutatohoz rendelt ertek. A hazeffektus-korrekciok szinten alkalmazasra kerulnek a nyers kozvelemenykutatasi adatokon.</p>
+
+    <p>Az osszesitett szavazataranyt normalizaljuk, hogy osszeguk 1 legyen. A sulyozott szorast $\sigma_p^{\text{poll}}$ szamoljuk minden partra, de minimum $\sigma_{\text{floor}}$ (alapertek: 2%).</p>
+
+    <h3>3. Korrelalt orszagos szavazatarany-huzas</h3>
+    <p>Az atlagos szavazataranyokat $\bar{\pi}_k$ logit-terbe transzformaljuk:</p>
+    $$ \mu_k = \text{logit}(\bar{\pi}_k) = \ln\!\frac{\bar{\pi}_k}{1 - \bar{\pi}_k} $$
+
+    <p>A teljes szoras logit-terben a kutatasbeli szoras es a szisztematikus hiba osszege:</p>
+    $$ \sigma_k = \sigma_k^{\text{poll}} + \sigma_{\text{national}} $$
+
+    <p>A kovarianciamartix $\Sigma$ a kovetkezo korrelaciokon alapul:</p>
     <ul>
-      <li><strong>Vesztes jeloltek</strong>: OSSZES szavazatuk toredekszavazat lesz a partjuk listajara.</li>
-      <li><strong>Gyoztes jelolt</strong>: <code>gyoztes_szavazat - (masodik_szavazat + 1)</code> szavazat kerul a partja listajara.</li>
+      <li>Fidesz &harr; fo ellenzek (Tisza): $\rho = -0{,}70$ (eros negativ korrelacio)</li>
+      <li>Kispartok egymas kozott: $\rho = +0{,}30$</li>
+      <li>Fidesz &harr; kispartok: $\rho = -0{,}20$</li>
     </ul>
-    <p>A vegleges listai szavazatszam: <code>listai szavazatok + toredekszavazatok</code>.</p>
+    $$ \Sigma = \text{diag}(\boldsymbol{\sigma}) \cdot R \cdot \text{diag}(\boldsymbol{\sigma}) $$
 
-    <h3>Kuszobertekek</h3>
+    <p>Egy szimulacioban $N$ darab mintavetel tortenik logit-terben, majd szisztematikus kozveleemnykutatasi hiba hozzaadasa (ami a Fidesz-t es az ellenzeket ellentetesen tolja el):</p>
+    $$ \mathbf{z}^{(i)} \sim \mathcal{N}(\boldsymbol{\mu}, \Sigma), \quad \varepsilon^{(i)} \sim \mathcal{N}(0, \sigma_{\text{national}}) $$
+    $$ z_{\text{Fidesz}}^{(i)} \mathrel{+}= \varepsilon^{(i)}, \quad z_{\text{Tisza}}^{(i)} \mathrel{-}= \varepsilon^{(i)} $$
+
+    <p>A visszatranszformalas szigmoid fugvennyel es normalizalassal tortenik:</p>
+    $$ \pi_k^{(i)} = \frac{\text{sigmoid}(z_k^{(i)})}{\sum_{j} \text{sigmoid}(z_j^{(i)})} $$
+
+    <h3>4. Swing modell: orszagosbol keruletszintre</h3>
+    <p>A keruleti szavazataranyok a 2022-es bazisvonalra epulnek, modositva az orszagos swing-gel, regionalis es keruleti zajjal:</p>
+    $$ s_{d,k}^{(i)} = b_{d,k} + \underbrace{(\pi_k^{(i)} - \bar{b}_k)}_{\text{orszagos swing}} + \underbrace{\eta_{r(d),k}^{(i)}}_{\text{regionalis}} + \underbrace{\epsilon_{d,k}^{(i)}}_{\text{keruleti}} $$
+
+    <p>ahol $b_{d,k}$ a 2022-es keruletszintu szavazataranyt jeloli, $\bar{b}_k$ az orszagos bazis, es:</p>
+    $$ \eta_{r,k} \sim \mathcal{N}(0,\, \sigma_{\text{regional}}), \quad \epsilon_{d,k} \sim \mathcal{N}(0,\, \sigma_{\text{district}}) $$
+
+    <p>A 106 kerulet 8 regionba van sorolva (Budapest, Pest, ENy-Dunantul, Kozep-Dunantul, Del-Dunantul, Eszak-Mo., Eszak-Alfold, Del-Alfold). Az egy regionhoz tartozo keruletek osztoznak a regionalis zajon.</p>
+
+    <h3>5. Varos/videk differencialt swing</h3>
+    <p>Minden kerulethez egy $u_d \in [0, 1]$ urbanizacios pontszam van rendelve (Budapest: 0.90&ndash;1.0, megyeszekhelyek: 0.6&ndash;0.8, videk: 0.1&ndash;0.3). A centralt urbanizacio ($\tilde{u}_d = u_d - \bar{u}$) biztositja, hogy a hatas orszagos szinten zero-sum legyen:</p>
+
+    $$ s_{d,k}^{(i)} \mathrel{+}= \gamma_k \cdot \tilde{u}_d $$
+
+    <p>ahol $\gamma_k$ a part-specifikus varosi swing parameter (pl. $\gamma_{\text{Fidesz}} = -0{,}05$ azt jelenti, hogy a Fidesz 5 szazalekpontot veszit a legurbanizaltabb keruletekben a legvidekiebbhez kepest).</p>
+
+    <p><strong>Budapest extra swing:</strong> egy kulon parameter $\beta_{\text{BP}}$ amely kizarolag a 18 budapesti keruletben hat:</p>
+    $$ s_{d,\text{Tisza}}^{(i)} \mathrel{+}= \beta_{\text{BP}} \cdot \mathbb{1}_{d \in \text{BP}}, \quad s_{d,\text{Fidesz}}^{(i)} \mathrel{-}= \beta_{\text{BP}} \cdot \mathbb{1}_{d \in \text{BP}} $$
+
+    <p>Vegul a szavazataranyokat $[0{,}005;\, 0{,}95]$ intervallumra vagjuk es ujranormalizaljuk, hogy osszeguk 1 legyen.</p>
+
+    <h3>6. Reszveteli differencialas</h3>
+    <p>A keruleti osszes szavazatszamot modosithatja a varos/videk reszveteli eltolodas:</p>
+    $$ V_d' = V_d \cdot \bigl(1 + \delta_{\text{urban}} \cdot u_d + \delta_{\text{rural}} \cdot (1 - u_d)\bigr) $$
+    <p>ahol $\delta_{\text{urban}}$ es $\delta_{\text{rural}}$ a reszveteli valtozas parameterei.</p>
+
+    <h3>7. OEVK szimulacio es toredekszavazatok</h3>
+    <p>Minden keruletben a legtobb szavazatot kapo jelolt nyer. A toredekszavazatok:</p>
     <ul>
-      <li>Egy part: <strong>5%</strong> a listai szavazatokbol</li>
-      <li>Ket part kozos listaja: <strong>10%</strong></li>
-      <li>Harom vagy tobb part kozos listaja: <strong>15%</strong></li>
+      <li><strong>Vesztes jeloltek</strong>: osszes szavazatuk toredekszavazat.</li>
+      <li><strong>Gyoztes jelolt</strong>:</li>
     </ul>
-    <p>A kuszoberteket a nyers listai szavazatok alapjan szamitjak (a toredekszavazatok hozzaadasa elott).</p>
+    $$ F_{\text{winner}} = \max\bigl(v_{\text{winner}} - v_{\text{2nd}} - 1,\; 0\bigr) $$
 
-    <h3>A szimulacio lepesrol lepesre</h3>
-    <ol>
-      <li><strong>Kozvelemenykutatas-osszesites</strong>: A kutatasok sulyozott atlaga az idoszeruseg, mintanagysag es kutato minosege alapjan.</li>
-      <li><strong>Korrelalt huzas</strong>: Multivarians normalis eloszlasbol huzunk logit-terben, ami biztositja, hogy a szavazataranyok 0 es 1 kozott maradnak es osszeguk 1.</li>
-      <li><strong>Swing modell</strong>: Az orszagos valtozast keruletszintre forditjuk, regionalis es keruleti zajjal.
-        <div class="formula">keruleti_eredmeny = 2022_alap + orszagos_swing + regionalis_zaj + keruleti_zaj</div>
-      </li>
-      <li><strong>OEVK szimulacio</strong>: Minden keruletben a legtobb szavazatot kapo jelolt nyer. Toredekszavazatok szamitasa.</li>
-      <li><strong>Listai elosztias</strong>: d'Hondt modszer a kuszobertekek alkalmazasa utan.</li>
-      <li><strong>Osszes mandatum</strong> = OEVK + lista mandatumok.</li>
-    </ol>
-
-    <h3>Parameterek</h3>
+    <h3>8. Listai mandatumelosztas (d'Hondt)</h3>
+    <p>Kuszobertekek a nyers listai szavazatokra (toredek hozzaadasa elott):</p>
     <ul>
-      <li><strong>Orszagos kozvelemenykutatasi hiba (sigma)</strong>: A kozvelemenykutatasok szisztematikus hibajarol szolo feltetelezesunk. Alapertek: 3%. Ha ez magasabb, szelessebb konfidencia-intervallumokat kapunk.</li>
-      <li><strong>Regionalis sigma</strong>: Mennyire terhetnek el a regiok az orszagos trendtol. Alapertek: 2.5%.</li>
-      <li><strong>Keruleti sigma</strong>: Egyedi keruleti zaj. Alapertek: 2%.</li>
-      <li><strong>Fidesz-Ellenzek korrelacio</strong>: Ha a Fidesz jobban teljesit, az ellenzek rosszabbul. Alapertek: -0.7.</li>
-      <li><strong>Kutato sulyozas</strong>: Minden kutatohoz minosegi suly (0-1) es hazeffektus-korrekciok rendelhetok.</li>
+      <li>Egy part: <strong>5%</strong></li>
+      <li>Ket part kozos lista: <strong>10%</strong> (pl. Fidesz-KDNP)</li>
+      <li>Harom vagy tobb part: <strong>15%</strong></li>
     </ul>
+    <p>A kuszob feletti partok effektiv szavazata: $E_k = L_k + F_k$ (listai + toredek). A d'Hondt modszer a 93 listai mandatumot osztja el:</p>
+    $$ \text{kvociens}_{k,s} = \frac{E_k}{s + 1}, \quad s = 0, 1, 2, \ldots $$
+    <p>A 93 legnagyobb kvociens kap mandatumot.</p>
+
+    <h3>9. Vegeredmeny</h3>
+    $$ \text{ossz. mandatum}_k = \text{OEVK}_k + \text{listai}_k $$
+    <p>A $N$ szimulaciobol szamitjuk: mediant, 90%-os konfidencia-intervallumot ($P_5$&ndash;$P_{95}$), gyozelmi valoszinuseget ($\geq 100$ mandatum), es ketharmados eselyt ($\geq 133$).</p>
 
     <h3>Adatforrasok</h3>
     <ul>
       <li>2022-es valasztasi eredmenyek: <a href="https://vtr.valasztas.hu/ogy2022" target="_blank">Nemzeti Valasztasi Iroda</a></li>
-      <li>Kozvelemenykutatasok: Median, Publicus, Zavecz Research, IDEA Intezet, Republikon, Nezopont, Szazadveg, stb.</li>
+      <li>Kozvelemenykutatasok: Median, Publicus, Zavecz Research, IDEA Intezet, Republikon, Nezopont, Szazadveg stb.</li>
     </ul>
 
     <h3>Korlatozasok</h3>
@@ -324,57 +376,123 @@
       <li>A modell a 2022-es keruleti eredmenyekre epit baziskent. Az uj partok (pl. Tisza) becslese a regi ellenzeki koalicio szavazatainak felosztasan alapul.</li>
       <li>Nem modelezi a nemzetisegi listakat (1 mandatum).</li>
       <li>A kozvelemenykutatasok hazeffektusainak becslese szubjektiv.</li>
-      <li>A modell feltetelezi, hogy a szavazoi viselkedes alapvetoen hasonlo a 2022-eshez, a valtozasokat a swing modell ragadja meg.</li>
+      <li>A swing modell feltetelez egyenletes viselkedest egy region belul; az urbanizacios korrekcioval a varos/videk kulonbseg lekezelheto.</li>
     </ul>
   </div>
 
   <!-- ENGLISH -->
   <div id="methodology-en" class="methodology" style="display:none">
     <h2>Methodology</h2>
-    <p>This simulator uses a Monte Carlo method to forecast the 2026 Hungarian parliamentary elections. The model runs 20,000 simulated elections, varying poll inputs randomly each time to assess uncertainty — similar to Nate Silver's FiveThirtyEight approach adapted for the Hungarian electoral system.</p>
+    <p>This simulator uses a Monte Carlo method to forecast the 2026 Hungarian parliamentary elections. The model runs $N = 20{,}000$ simulated elections, perturbing poll inputs with correlated random variables each time to assess uncertainty &mdash; an approach similar to Nate Silver's FiveThirtyEight model, adapted for the Hungarian mixed electoral system.</p>
 
-    <h3>The Hungarian Electoral System</h3>
-    <p>The National Assembly has <strong>199 seats</strong>:</p>
+    <h3>1. The Hungarian Electoral System</h3>
+    <p>The National Assembly (<em>Orszaggyules</em>) has <strong>199 seats</strong>:</p>
     <ul>
-      <li><strong>106 single-member district (SMD) seats</strong> — first-past-the-post, single round. Highest vote count wins.</li>
-      <li><strong>93 national list seats</strong> — proportional allocation using the <strong>d'Hondt method</strong>.</li>
+      <li><strong>106 single-member district (SMD) seats</strong> &mdash; first-past-the-post (FPTP), single round. The candidate with the most votes wins the district.</li>
+      <li><strong>93 national list seats</strong> &mdash; proportional allocation via the <strong>d'Hondt method</strong>, augmented by fragment votes from SMD results.</li>
     </ul>
 
-    <h3>Fragment Votes (Toredekszavazatok)</h3>
-    <p>A unique feature of the Hungarian system. The input to d'Hondt is NOT raw party-list votes. It is: <code>party_list_votes + fragment_votes</code>.</p>
+    <h3>2. Poll Aggregation</h3>
+    <p>Each poll $i$ receives a composite weight that is the product of three factors:</p>
+    $$ w_i = w_i^{\text{time}} \cdot w_i^{\text{sample}} \cdot w_i^{\text{quality}} $$
+
+    <p><strong>Recency weight</strong> &mdash; exponential decay with half-life $\tau$ (default: 14 days):</p>
+    $$ w_i^{\text{time}} = \exp\!\Bigl(-\frac{\ln 2}{\tau} \cdot \Delta t_i\Bigr) $$
+    <p>where $\Delta t_i$ is the number of days between the poll and the reference date.</p>
+
+    <p><strong>Sample size weight:</strong></p>
+    $$ w_i^{\text{sample}} = \sqrt{\frac{n_i}{1000}} $$
+
+    <p><strong>Quality weight</strong> $w_i^{\text{quality}} \in [0, 1]$: a per-pollster reliability rating. House effect corrections (in percentage points) are applied to raw poll figures before averaging.</p>
+
+    <p>The weighted mean $\bar{\pi}_k$ for each party $k$ is normalized to sum to 1. The weighted standard deviation $\sigma_k^{\text{poll}}$ is computed for each party but floored at $\sigma_{\text{floor}}$ (default: 2%) to prevent overconfidence when few polls are available.</p>
+
+    <h3>3. Correlated National Vote Share Draws</h3>
+    <p>We transform the mean vote shares into logit space to ensure draws remain in $(0,1)$:</p>
+    $$ \mu_k = \operatorname{logit}(\bar{\pi}_k) = \ln\!\frac{\bar{\pi}_k}{1 - \bar{\pi}_k} $$
+
+    <p>The total logit-space standard deviation combines poll disagreement and systematic error:</p>
+    $$ \sigma_k = \sigma_k^{\text{poll}} + \sigma_{\text{national}} $$
+
+    <p>We construct a covariance matrix $\Sigma = \operatorname{diag}(\boldsymbol{\sigma}) \cdot R \cdot \operatorname{diag}(\boldsymbol{\sigma})$ where $R$ encodes the correlation structure:</p>
     <ul>
-      <li><strong>Losing candidates</strong>: ALL their votes become fragment votes for their party's national list.</li>
-      <li><strong>Winning candidate</strong>: <code>winner_votes - (second_place_votes + 1)</code> become fragment votes.</li>
+      <li>Fidesz &harr; main opposition (Tisza): $\rho = -0.70$ (strong negative &mdash; when one gains, the other loses)</li>
+      <li>Small parties &harr; small parties: $\rho = +0.30$ (mild positive &mdash; anti-incumbent sentiment lifts all)</li>
+      <li>Fidesz &harr; small parties: $\rho = -0.20$</li>
     </ul>
 
-    <h3>Thresholds</h3>
+    <p>For each simulation $i$, we draw from a multivariate normal and add a correlated systematic polling error $\varepsilon$ (polls may all be wrong in the same direction):</p>
+    $$ \mathbf{z}^{(i)} \sim \mathcal{N}(\boldsymbol{\mu}, \Sigma), \quad \varepsilon^{(i)} \sim \mathcal{N}(0, \sigma_{\text{national}}) $$
+    $$ z_{\text{Fidesz}}^{(i)} \mathrel{+}= \varepsilon^{(i)}, \quad z_{\text{Tisza}}^{(i)} \mathrel{-}= \varepsilon^{(i)} $$
+
+    <p>Shares are recovered via the sigmoid function and normalized:</p>
+    $$ \pi_k^{(i)} = \frac{\operatorname{sigmoid}(z_k^{(i)})}{\sum_{j} \operatorname{sigmoid}(z_j^{(i)})} $$
+
+    <h3>4. Swing Model: National to District Translation</h3>
+    <p>District-level vote shares are built from a 2022 baseline plus national swing, regional noise, and district-level noise:</p>
+    $$ s_{d,k}^{(i)} = \underbrace{b_{d,k}}_{\text{2022 baseline}} + \underbrace{(\pi_k^{(i)} - \bar{b}_k)}_{\text{national swing}} + \underbrace{\eta_{r(d),k}^{(i)}}_{\text{regional noise}} + \underbrace{\epsilon_{d,k}^{(i)}}_{\text{district noise}} $$
+
+    <p>where $b_{d,k}$ is the 2022 vote share of party $k$ in district $d$, $\bar{b}_k$ is the national 2022 baseline, and:</p>
+    $$ \eta_{r,k} \sim \mathcal{N}(0,\, \sigma_{\text{regional}}), \quad \epsilon_{d,k} \sim \mathcal{N}(0,\, \sigma_{\text{district}}) $$
+
+    <p>The 106 districts are grouped into 8 regions (Budapest, Pest, Northwestern Transdanubia, Central Transdanubia, Southern Transdanubia, Northern Hungary, Northern Great Plain, Southern Great Plain). Districts in the same region share the same regional noise draw $\eta_r$.</p>
+
+    <h3>5. Urban/Rural Differential Swing</h3>
+    <p>Each district $d$ is assigned an urbanization score $u_d \in [0, 1]$ (Budapest: 0.90&ndash;1.0, county capitals: 0.6&ndash;0.8, rural: 0.1&ndash;0.3). The centered urbanization $\tilde{u}_d = u_d - \bar{u}$ ensures the effect is zero-sum nationally:</p>
+
+    $$ s_{d,k}^{(i)} \mathrel{+}= \gamma_k \cdot \tilde{u}_d $$
+
+    <p>where $\gamma_k$ is the per-party urban swing parameter. For example, $\gamma_{\text{Fidesz}} = -0.05$ means Fidesz loses 5 percentage points in the most urban districts relative to the most rural ones, with no change in the national average.</p>
+
+    <p><strong>Budapest extra swing:</strong> An additional parameter $\beta_{\text{BP}}$ applies exclusively to the 18 Budapest districts, modeling the capital's distinct political dynamics:</p>
+    $$ s_{d,\text{Tisza}}^{(i)} \mathrel{+}= \beta_{\text{BP}} \cdot \mathbb{1}_{d \in \text{BP}}, \quad s_{d,\text{Fidesz}}^{(i)} \mathrel{-}= \beta_{\text{BP}} \cdot \mathbb{1}_{d \in \text{BP}} $$
+
+    <p>After all adjustments, district shares are clipped to $[0.005,\, 0.95]$ and re-normalized to sum to 1.</p>
+
+    <h3>6. Turnout Differentials</h3>
+    <p>The 2022 district vote totals $V_d$ can be modified by urban/rural turnout shifts:</p>
+    $$ V_d' = V_d \cdot \bigl(1 + \delta_{\text{urban}} \cdot u_d + \delta_{\text{rural}} \cdot (1 - u_d)\bigr) $$
+    <p>where $\delta_{\text{urban}}$ and $\delta_{\text{rural}}$ are user-configurable turnout shift parameters. This models scenarios like "higher urban mobilization benefits opposition parties."</p>
+
+    <h3>7. SMD Simulation &amp; Fragment Votes</h3>
+    <p>In each district, the party with the most votes wins the seat. Fragment votes (<em>toredekszavazatok</em>), a unique feature of the Hungarian system, are computed as:</p>
     <ul>
-      <li>Single party: <strong>5%</strong> of total valid national list votes</li>
-      <li>Two-party joint list: <strong>10%</strong></li>
+      <li><strong>Losing candidates</strong>: all their votes become fragment votes for their party's national list.</li>
+      <li><strong>Winning candidate</strong>:</li>
+    </ul>
+    $$ F_{\text{winner}} = \max\bigl(v_{\text{winner}} - v_{\text{2nd}} - 1,\; 0\bigr) $$
+    <p>This mechanism reduces the "wasted vote" problem and compensates parties that lose many districts by narrow margins.</p>
+
+    <h3>8. List Seat Allocation (d'Hondt)</h3>
+    <p>Threshold eligibility is determined from raw list votes (before adding fragment votes):</p>
+    <ul>
+      <li>Single party: <strong>5%</strong></li>
+      <li>Two-party joint list: <strong>10%</strong> (e.g., Fidesz-KDNP)</li>
       <li>Three-or-more party joint list: <strong>15%</strong></li>
     </ul>
-    <p>Threshold is applied to raw list votes (before adding fragment votes). Parties below threshold are excluded from list seat allocation.</p>
+    <p>For eligible parties, the effective vote count is $E_k = L_k + F_k$ (list votes + fragment votes). The d'Hondt method allocates 93 seats by iteratively awarding seats to the party with the highest quotient:</p>
+    $$ q_{k,s} = \frac{E_k}{s + 1}, \quad s = 0, 1, 2, \ldots $$
+    <p>The 93 largest quotients across all eligible parties receive one seat each.</p>
 
-    <h3>How the Simulation Works (step by step)</h3>
-    <ol>
-      <li><strong>Poll aggregation</strong>: Weighted average of polls by recency (exponential decay), sample size, and pollster quality/reliability.</li>
-      <li><strong>Correlated draw</strong>: Draw vote shares from a multivariate normal distribution in logit space, ensuring shares stay in (0,1) and sum to 1.0. Includes systematic polling error (all polls wrong in the same direction).</li>
-      <li><strong>Swing model</strong>: Translate national share changes to district level with regional and district-level noise.
-        <div class="formula">district_result = 2022_baseline + national_swing + regional_noise + district_noise</div>
-      </li>
-      <li><strong>SMD simulation</strong>: In each of 106 districts, the candidate with the most votes wins. Fragment votes are calculated.</li>
-      <li><strong>List allocation</strong>: d'Hondt method applied to (list votes + fragment votes) for parties above threshold.</li>
-      <li><strong>Total seats</strong> = SMD seats + list seats for each party.</li>
-    </ol>
+    <h3>9. Final Results</h3>
+    $$ \text{total seats}_k = \text{SMD seats}_k + \text{list seats}_k $$
+    <p>From the $N$ simulations we report: the median seat count, the 90% confidence interval ($P_5$&ndash;$P_{95}$), the win probability ($\Pr[\text{seats} \geq 100]$), and the supermajority probability ($\Pr[\text{seats} \geq 133]$).</p>
 
-    <h3>Key Parameters</h3>
-    <ul>
-      <li><strong>National polling error (sigma)</strong>: How much polls might be systematically off. Default: 3%. Higher values = wider confidence intervals.</li>
-      <li><strong>Regional sigma</strong>: How much regions can deviate from the national trend. Default: 2.5%.</li>
-      <li><strong>District sigma</strong>: Idiosyncratic per-district noise. Default: 2%.</li>
-      <li><strong>Fidesz-Opposition correlation</strong>: When Fidesz goes up, opposition goes down. Default: -0.7.</li>
-      <li><strong>Pollster weighting</strong>: Each pollster gets a quality weight (0-1) and house effect corrections (in percentage points).</li>
-    </ul>
+    <h3>Key Parameters Summary</h3>
+    <table class="params-summary-table">
+    <tr><th>Parameter</th><th>Default</th><th>Description</th></tr>
+    <tr><td>$\sigma_{\text{national}}$</td><td>3%</td><td>Systematic polling error &mdash; how much all polls may be wrong in the same direction</td></tr>
+    <tr><td>$\sigma_{\text{regional}}$</td><td>2.5%</td><td>Region-level deviation from national trend</td></tr>
+    <tr><td>$\sigma_{\text{district}}$</td><td>2%</td><td>Idiosyncratic per-district noise</td></tr>
+    <tr><td>$\sigma_{\text{turnout}}$</td><td>2%</td><td>Turnout variation across simulations</td></tr>
+    <tr><td>$\rho_{\text{Fidesz-Opp}}$</td><td>&minus;0.70</td><td>Fidesz-Opposition vote share correlation</td></tr>
+    <tr><td>$\rho_{\text{small}}$</td><td>+0.30</td><td>Small party inter-correlation</td></tr>
+    <tr><td>$\tau$</td><td>14 days</td><td>Poll recency half-life</td></tr>
+    <tr><td>$\sigma_{\text{floor}}$</td><td>2%</td><td>Minimum per-party uncertainty</td></tr>
+    <tr><td>$\gamma_k$</td><td>0</td><td>Per-party urban swing (&minus;0.10 to +0.10)</td></tr>
+    <tr><td>$\beta_{\text{BP}}$</td><td>0</td><td>Budapest extra opposition swing</td></tr>
+    <tr><td>$\delta_{\text{urban}}, \delta_{\text{rural}}$</td><td>0</td><td>Urban/rural turnout shifts</td></tr>
+    </table>
 
     <h3>Data Sources</h3>
     <ul>
@@ -384,10 +502,11 @@
 
     <h3>Limitations</h3>
     <ul>
-      <li>The model uses 2022 district results as baseline. New parties (e.g., Tisza) are estimated by splitting the 2022 united opposition vote.</li>
+      <li>The model uses 2022 district results as baseline. New parties (e.g., Tisza) are estimated by splitting the 2022 united opposition vote using estimated split ratios.</li>
       <li>Does not model nationality list seats (1 seat).</li>
-      <li>Pollster house effect estimates are subjective.</li>
-      <li>Assumes voter behavior is fundamentally similar to 2022, with changes captured by the swing model.</li>
+      <li>Pollster house effect estimates are subjective and based on historical comparisons.</li>
+      <li>The swing model assumes a uniform regional effect within each of the 8 regions; the urbanization correction addresses within-region urban/rural differences.</li>
+      <li>Candidate-level effects (personal vote, local incumbency advantage) are not modeled explicitly &mdash; they are captured as noise in $\sigma_{\text{district}}$.</li>
     </ul>
   </div>
 </div>
