@@ -13,3 +13,6 @@ jobs:
 
       - name: Build and restart containers
         run: cd /opt/azobolbenszavazok && docker compose build && docker compose up -d
+
+      - name: Wait for startup and show logs
+        run: sleep 5 && cd /opt/azobolbenszavazok && docker compose logs --tail=50 api
