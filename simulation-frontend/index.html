@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Magyar Valasztasi Szimulator</title>
-  <link rel="stylesheet" href="css/style.css?v=4">
+  <link rel="stylesheet" href="css/style.css?v=5">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
@@ -353,7 +353,7 @@
     <p>A valasztok ket szavazatot adnak le: egyet az egyeni jeloltre (OEVK), egyet az orszagos listra. Ezek elterhetnek &mdash; peldaul egy Mi Hazank-szavazo a keruletben mas jeloltre (pl. &bdquo;egyeb&rdquo;) szavazhat, de a listan a Mi Hazankra. A modell ezt ugy kezeli, hogy minden parthoz megadhato egy celpart es egy szazalek: az OEVK-szavazok $f_k$ hanyada a listan a celpartra szavaz.</p>
     <p>A listai szavazataranyok az OEVK-bazisbol szarmaznak, modositva az atszavazasokkal:</p>
     $$ \text{lista}_k^{(i)} = \pi_k^{(i)} - f_k \cdot \pi_k^{(i)} + \sum_{j:\,\text{cel}(j)=k} f_j \cdot \pi_j^{(i)} $$
-    <p>ahol $f_k \in [0, 0{,}30]$ a $k$ part OEVK-szavazoibol a celpartra atszavazok aranya. Peldaul ha $f_{\text{Mi Hazank}} = 0{,}10$ es cel $=$ egyeb, akkor a Mi Hazank OEVK-szavazoibol 10% a listan az &bdquo;egyeb&rdquo; partra szavaz. Alapertek: 0 (nincs atszavazas).</p>
+    <p>ahol $f_k \in [0, 1]$ a $k$ part OEVK-szavazoibol a celpartra atszavazok aranya. Peldaul ha $f_{\text{Mi Hazank}} = 0{,}10$ es cel $=$ egyeb, akkor a Mi Hazank OEVK-szavazoibol 10% a listan az &bdquo;egyeb&rdquo; partra szavaz. Alapertek: 0 (nincs atszavazas).</p>
 
     <h3>8. OEVK szimulacio es toredekszavazatok</h3>
     <p>Minden keruletben a legtobb szavazatot kapo jelolt nyer. A toredekszavazatok:</p>
@@ -471,7 +471,7 @@
     <p>Hungarian voters cast two ballots: one for a district (SMD) candidate and one for a national party list. These can diverge &mdash; e.g., some Mi Haz&aacute;nk SMD voters might vote for an "other" candidate in the district but cast their list vote for Mi Haz&aacute;nk. The model allows specifying, for each party, a target party and the fraction of SMD voters who split their list vote.</p>
     <p>List vote shares are derived from the SMD baseline, adjusted by vote transfers:</p>
     $$ \text{list}_k^{(i)} = \pi_k^{(i)} - f_k \cdot \pi_k^{(i)} + \sum_{j:\,\text{target}(j)=k} f_j \cdot \pi_j^{(i)} $$
-    <p>where $f_k \in [0, 0.30]$ is the fraction of party $k$'s SMD voters who cast their list vote for the designated target party instead. For example, if $f_{\text{Mi Hazank}} = 0.10$ with target $=$ other, then 10% of Mi Haz&aacute;nk's SMD supporters vote "other" on the list. Default: 0 (no splitting).</p>
+    <p>where $f_k \in [0, 1]$ is the fraction of party $k$'s SMD voters who cast their list vote for the designated target party instead. For example, if $f_{\text{Mi Hazank}} = 0.10$ with target $=$ other, then 10% of Mi Haz&aacute;nk's SMD supporters vote "other" on the list. Default: 0 (no splitting).</p>
 
     <h3>8. SMD Simulation &amp; Fragment Votes</h3>
     <p>In each district, the party with the most votes wins the seat. Fragment votes (<em>toredekszavazatok</em>), a unique feature of the Hungarian system, are computed as:</p>
@@ -511,7 +511,7 @@
     <tr><td>$\gamma_k$</td><td>0</td><td>Per-party urban swing (&minus;0.10 to +0.10)</td></tr>
     <tr><td>$\beta_{\text{BP}}$</td><td>0</td><td>Budapest extra opposition swing</td></tr>
     <tr><td>$\delta_{\text{urban}}, \delta_{\text{rural}}$</td><td>0</td><td>Urban/rural turnout shifts</td></tr>
-    <tr><td>$f_k$ (ticket split)</td><td>0</td><td>Fraction of party $k$'s SMD voters splitting list vote to target party (0&ndash;0.30)</td></tr>
+    <tr><td>$f_k$ (ticket split)</td><td>0</td><td>Fraction of party $k$'s SMD voters splitting list vote to target party (0&ndash;1.0)</td></tr>
     </table>
 
     <h3>Data Sources</h3>
@@ -532,10 +532,10 @@
 </div>
 
 <!-- ── Scripts ────────────────────────────────────────────────── -->
-<script src="js/i18n.js?v=4"></script>
-<script src="js/api.js?v=4"></script>
-<script src="js/charts.js?v=4"></script>
-<script src="js/app.js?v=4"></script>
+<script src="js/i18n.js?v=5"></script>
+<script src="js/api.js?v=5"></script>
+<script src="js/charts.js?v=5"></script>
+<script src="js/app.js?v=5"></script>
 
 </body>
 </html>

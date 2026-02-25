@@ -185,6 +185,10 @@ def run_simulation(
     # Step 1: Get national vote shares
     if input_data and input_data.custom_shares:
         mean_shares = input_data.custom_shares
+        # Normalize custom shares to sum to 1.0
+        total = sum(mean_shares.values())
+        if total > 0 and abs(total - 1.0) > 0.001:
+            mean_shares = {p: v / total for p, v in mean_shares.items()}
         uncertainty = {p: config.floor_uncertainty for p in mean_shares}
     else:
         polls = load_polls_csv(config.data_dir / "polls.csv")
