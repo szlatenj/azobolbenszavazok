@@ -447,7 +447,7 @@ function renderTicketSplitControls() {
         ).join('')}
       </select>
       <input type="range" class="ticket-split-pct" id="ts-pct-${p.short}"
-        min="0" max="30" step="1" value="${pctDisplay}"
+        min="0" max="100" step="1" value="${pctDisplay}"
         oninput="updateTicketSplit('${p.short}')">
       <span class="param-val" id="ts-val-${p.short}">${pctDisplay}%</span>
     </div>`;
