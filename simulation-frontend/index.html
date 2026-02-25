@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Magyar Valasztasi Szimulator</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
+</head>
+<body>
+
+<!-- ── Header ────────────────────────────────────────────────── -->
+<header class="header">
+  <div class="header-left">
+    <h1 data-i18n="title">Magyar Valasztasi Szimulator</h1>
+    <p data-i18n="subtitle">Monte Carlo valasztasi elorejelzes - 2026</p>
+  </div>
+  <div class="header-right">
+    <button id="run-btn" class="btn btn-primary">
+      <div id="run-spinner" class="spinner"></div>
+      <span data-i18n="run_simulation">Szimulacio futtatasa</span>
+    </button>
+    <button id="lang-toggle" class="btn btn-secondary">EN</button>
+  </div>
+</header>
+
+<!-- ── Error ─────────────────────────────────────────────────── -->
+<div id="error-msg"></div>
+
+<!-- ── Tabs ───────────────────────────────────────────────────── -->
+<nav class="tabs">
+  <button class="tab-btn active" data-tab="tab-results" data-i18n="tab_results">Eredmenyek</button>
+  <button class="tab-btn" data-tab="tab-polling" data-i18n="tab_polling">Kozvelemenykutatasok</button>
+  <button class="tab-btn" data-tab="tab-params" data-i18n="tab_params">Modell parameterek</button>
+  <button class="tab-btn" data-tab="tab-pollsters" data-i18n="tab_pollsters">Kutatok sulyozasa</button>
+  <button class="tab-btn" data-tab="tab-methodology" data-i18n="tab_methodology">Modszertan</button>
+</nav>
+
+<!-- ════════════════════════════════════════════════════════════ -->
+<!-- TAB 1: RESULTS                                              -->
+<!-- ════════════════════════════════════════════════════════════ -->
+<div id="tab-results" class="tab-panel active">
+  <div id="headline-cards" class="headline-cards">
+    <div class="headline-card" style="border-left:4px solid #ccc">
+      <div class="headline-party">Loading...</div>
+      <div class="headline-seats">--</div>
+    </div>
+  </div>
+
+  <div id="result-meta" class="result-meta">--</div>
+
+  <h3 class="section-title" data-i18n="seat_distribution">Mandatummegoszlas</h3>
+  <div class="chart-container">
+    <canvas id="seat-chart"></canvas>
+  </div>
+
+  <h3 class="section-title" data-i18n="seat_breakdown">Mandatum reszletezese</h3>
+  <table><tbody id="seat-table"></tbody></table>
+
+  <h3 class="section-title">
+    <span data-i18n="seat_distribution">Mandatummegoszlas</span> — Histogram
+  </h3>
+  <div class="histogram-controls">
+    <select id="histogram-party"></select>
+  </div>
+  <div class="chart-container">
+    <canvas id="histogram-chart"></canvas>
+  </div>
+
+  <h3 class="section-title" data-i18n="input_shares">Bemeneti szavazataranyok</h3>
+  <div id="input-shares"></div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════ -->
+<!-- TAB 2: POLLING & VOTE SHARES                                -->
+<!-- ════════════════════════════════════════════════════════════ -->
+<div id="tab-polling" class="tab-panel">
+  <h3 class="section-title" data-i18n="polling_title">Szavazataranyok es partok</h3>
+
+  <div class="mode-toggle">
+    <label>
+      <input type="radio" name="share-mode" id="share-mode-polls" checked>
+      <span data-i18n="use_polls">Kozvelemenykutatasok hasznalata</span>
+    </label>
+    <label>
+      <input type="radio" name="share-mode" id="share-mode-custom">
+      <span data-i18n="use_custom">Egyeni aranyok</span>
+    </label>
+  </div>
+
+  <h3 class="section-title" data-i18n="party_toggles">Partok ki/be kapcsolasa</h3>
+  <div id="party-toggles-container"></div>
+
+  <h3 class="section-title" data-i18n="use_custom">Egyeni aranyok</h3>
+  <div id="custom-sliders" class="dimmed">
+    <div id="party-sliders-container"></div>
+  </div>
+
+  <div class="polls-section">
+    <h3 class="section-title" data-i18n="poll_average">Kozvelemenykutatasi atlag</h3>
+    <div class="polls-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th><th>Pollster</th><th>N</th>
+            <th>Fidesz</th><th>Tisza</th><th>Mi Hazank</th><th>DK</th><th>MKKP</th>
+          </tr>
+        </thead>
+        <tbody id="polls-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════ -->
+<!-- TAB 3: MODEL PARAMETERS                                     -->
+<!-- ════════════════════════════════════════════════════════════ -->
+<div id="tab-params" class="tab-panel">
+  <h3 class="section-title" data-i18n="params_title">Modell parameterek</h3>
+
+  <!-- Poll Aggregation -->
+  <div class="param-group">
+    <h3 data-i18n="poll_aggregation">Kozvelemenykutatas sulyozas</h3>
+    <div class="param-row">
+      <span class="param-label" data-i18n="poll_halflife">Felezesi ido (nap)</span>
+      <input type="range" class="param-slider" data-param="poll_halflife_days" min="3" max="60" step="1">
+      <span class="param-val" id="pval-poll_halflife_days">14d</span>
+    </div>
+    <div class="param-row">
+      <span class="param-label" data-i18n="floor_uncertainty">Minimalis bizonytalansag</span>
+      <input type="range" class="param-slider" data-param="floor_uncertainty" min="0.005" max="0.05" step="0.005">
+      <span class="param-val" id="pval-floor_uncertainty">2.0%</span>
+    </div>
+  </div>
+
+  <!-- Error Structure -->
+  <div class="param-group">
+    <h3 data-i18n="error_structure">Hibastruktura (Nate Silver-modell)</h3>
+    <div class="param-row">
+      <span class="param-label" data-i18n="national_error">Orszagos kozvelemenykutatasi hiba (sigma)</span>
+      <input type="range" class="param-slider" data-param="sigma_polling_error" min="0.01" max="0.08" step="0.005">
+      <span class="param-val" id="pval-sigma_polling_error">3.0%</span>
+    </div>
+    <div class="param-row">
+      <span class="param-label" data-i18n="regional_swing">Regionalis elteres (sigma)</span>
+      <input type="range" class="param-slider" data-param="sigma_regional" min="0.005" max="0.05" step="0.005">
+      <span class="param-val" id="pval-sigma_regional">2.5%</span>
+    </div>
+    <div class="param-row">
+      <span class="param-label" data-i18n="district_noise">Keruleti zaj (sigma)</span>
+      <input type="range" class="param-slider" data-param="sigma_district" min="0.005" max="0.05" step="0.005">
+      <span class="param-val" id="pval-sigma_district">2.0%</span>
+    </div>
+    <div class="param-row">
+      <span class="param-label" data-i18n="turnout_var">Reszveteli valtozas (sigma)</span>
+      <input type="range" class="param-slider" data-param="sigma_turnout" min="0.005" max="0.05" step="0.005">
+      <span class="param-val" id="pval-sigma_turnout">2.0%</span>
+    </div>
+  </div>
+
+  <!-- Correlations -->
+  <div class="param-group">
+    <h3 data-i18n="correlations">Korrelaciok</h3>
+    <div class="param-row">
+      <span class="param-label" data-i18n="fidesz_opp_corr">Fidesz-Ellenzek korrelacio</span>
+      <input type="range" class="param-slider" data-param="fidesz_opposition_correlation" min="-1" max="0" step="0.05">
+      <span class="param-val" id="pval-fidesz_opposition_correlation">-0.70</span>
+    </div>
+    <div class="param-row">
+      <span class="param-label" data-i18n="small_party_corr">Kispartok kozotti korrelacio</span>
+      <input type="range" class="param-slider" data-param="small_party_correlation" min="0" max="1" step="0.05">
+      <span class="param-val" id="pval-small_party_correlation">0.30</span>
+    </div>
+  </div>
+
+  <!-- Voter Behavior Change -->
+  <div class="param-group">
+    <h3 data-i18n="voter_behavior">Szavazoi viselkedes valtozas</h3>
+    <div class="param-row">
+      <span class="param-label" data-i18n="urban_swing_fidesz">Fidesz varosi swing (vs. videk)</span>
+      <input type="range" class="param-slider" data-param="urban_swing_fidesz" min="-0.10" max="0.10" step="0.01">
+      <span class="param-val" id="pval-urban_swing_fidesz">0%</span>
+    </div>
+    <div class="param-row">
+      <span class="param-label" data-i18n="urban_swing_tisza">Tisza varosi swing (vs. videk)</span>
+      <input type="range" class="param-slider" data-param="urban_swing_tisza" min="-0.10" max="0.10" step="0.01">
+      <span class="param-val" id="pval-urban_swing_tisza">0%</span>
+    </div>
+    <div class="param-row">
+      <span class="param-label" data-i18n="urban_swing_mi_hazank">Mi Hazank varosi swing (vs. videk)</span>
+      <input type="range" class="param-slider" data-param="urban_swing_mi_hazank" min="-0.10" max="0.10" step="0.01">
+      <span class="param-val" id="pval-urban_swing_mi_hazank">0%</span>
+    </div>
+    <div class="param-row">
+      <span class="param-label" data-i18n="urban_turnout_shift">Varosi reszvetel valtozas</span>
+      <input type="range" class="param-slider" data-param="urban_turnout_shift" min="-0.10" max="0.10" step="0.01">
+      <span class="param-val" id="pval-urban_turnout_shift">0%</span>
+    </div>
+    <div class="param-row">
+      <span class="param-label" data-i18n="rural_turnout_shift">Videki reszvetel valtozas</span>
+      <input type="range" class="param-slider" data-param="rural_turnout_shift" min="-0.10" max="0.10" step="0.01">
+      <span class="param-val" id="pval-rural_turnout_shift">0%</span>
+    </div>
+    <div class="param-row">
+      <span class="param-label" data-i18n="budapest_extra_swing">Budapest extra ellenzeki swing</span>
+      <input type="range" class="param-slider" data-param="budapest_extra_swing" min="-0.10" max="0.10" step="0.01">
+      <span class="param-val" id="pval-budapest_extra_swing">0%</span>
+    </div>
+  </div>
+
+  <!-- Simulation Settings -->
+  <div class="param-group">
+    <h3 data-i18n="sim_settings">Szimulacio beallitasok</h3>
+    <div class="param-row">
+      <span class="param-label" data-i18n="n_simulations">Szimulacok szama</span>
+      <select id="n-simulations">
+        <option value="1000">1,000 (fast)</option>
+        <option value="5000">5,000</option>
+        <option value="10000">10,000</option>
+        <option value="20000" selected>20,000 (default)</option>
+        <option value="50000">50,000 (slow)</option>
+      </select>
+    </div>
+    <div class="param-row">
+      <span class="param-label" data-i18n="random_seed">Random seed (opcionalis)</span>
+      <input type="text" id="random-seed" placeholder="e.g. 42" style="width:100px;padding:0.3rem 0.6rem;border:1px solid #ccc;border-radius:4px;">
+    </div>
+  </div>
+
+  <button id="reset-defaults-btn" class="btn btn-outline" data-i18n="reset_defaults">Alapertelmezes visszaallitasa</button>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════ -->
+<!-- TAB 4: POLLSTER WEIGHTS                                     -->
+<!-- ════════════════════════════════════════════════════════════ -->
+<div id="tab-pollsters" class="tab-panel">
+  <h3 class="section-title" data-i18n="pollster_title">Kozvelemenykutatok sulyozasa</h3>
+
+  <div class="preset-buttons">
+    <button id="preset-equal" class="btn btn-outline btn-sm" data-i18n="preset_equal">Egyenlo sulyozas</button>
+    <button id="preset-default" class="btn btn-outline btn-sm" data-i18n="preset_default">Alapertelmezett</button>
+    <button id="preset-independent" class="btn btn-outline btn-sm" data-i18n="preset_independent">Csak fuggetlen</button>
+  </div>
+
+  <div class="pollster-table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th data-i18n="pollster_name">Kutato</th>
+          <th data-i18n="pollster_lean">Besorolas</th>
+          <th data-i18n="quality_weight">Minosegi suly</th>
+          <th data-i18n="house_fidesz">Fidesz hatasertek</th>
+          <th data-i18n="house_tisza">Tisza hatasertek</th>
+        </tr>
+      </thead>
+      <tbody id="pollster-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════ -->
+<!-- TAB 5: METHODOLOGY                                          -->
+<!-- ════════════════════════════════════════════════════════════ -->
+<div id="tab-methodology" class="tab-panel">
+
+  <!-- HUNGARIAN -->
+  <div id="methodology-hu" class="methodology">
+    <h2>Modszertan</h2>
+    <p>Ez a szimulator Monte Carlo modszert hasznal a 2026-os magyar orszaggyulesi valasztasok elorejelzesere. A modell 20 000 szimulalt valasztast futtat le, es minden alkalommal veletlen valtozokkal modositja a kozvelemenykutatasi adatokat, hogy felmerhesse a bizonytalansagot.</p>
+
+    <h3>A magyar valasztasi rendszer</h3>
+    <p>Az Orszaggyulesnek <strong>199 kepviseloje</strong> van:</p>
+    <ul>
+      <li><strong>106 egyeni valasztokeruleti (OEVK) mandatum</strong> — tobbsegi rendszer, egy fordulo. A legtobb szavazatot kapo jelolt nyer.</li>
+      <li><strong>93 orszagos listai mandatum</strong> — aranyos elosztias a <strong>d'Hondt modszer</strong> alapjan.</li>
+    </ul>
+
+    <h3>Toredekszavazatok</h3>
+    <p>A listai szekek elosztasanal a partok nem csupan a listai szavazataikat kapjak meg, hanem a toredekszavazatokat is:</p>
+    <ul>
+      <li><strong>Vesztes jeloltek</strong>: OSSZES szavazatuk toredekszavazat lesz a partjuk listajara.</li>
+      <li><strong>Gyoztes jelolt</strong>: <code>gyoztes_szavazat - (masodik_szavazat + 1)</code> szavazat kerul a partja listajara.</li>
+    </ul>
+    <p>A vegleges listai szavazatszam: <code>listai szavazatok + toredekszavazatok</code>.</p>
+
+    <h3>Kuszobertekek</h3>
+    <ul>
+      <li>Egy part: <strong>5%</strong> a listai szavazatokbol</li>
+      <li>Ket part kozos listaja: <strong>10%</strong></li>
+      <li>Harom vagy tobb part kozos listaja: <strong>15%</strong></li>
+    </ul>
+    <p>A kuszoberteket a nyers listai szavazatok alapjan szamitjak (a toredekszavazatok hozzaadasa elott).</p>
+
+    <h3>A szimulacio lepesrol lepesre</h3>
+    <ol>
+      <li><strong>Kozvelemenykutatas-osszesites</strong>: A kutatasok sulyozott atlaga az idoszeruseg, mintanagysag es kutato minosege alapjan.</li>
+      <li><strong>Korrelalt huzas</strong>: Multivarians normalis eloszlasbol huzunk logit-terben, ami biztositja, hogy a szavazataranyok 0 es 1 kozott maradnak es osszeguk 1.</li>
+      <li><strong>Swing modell</strong>: Az orszagos valtozast keruletszintre forditjuk, regionalis es keruleti zajjal.
+        <div class="formula">keruleti_eredmeny = 2022_alap + orszagos_swing + regionalis_zaj + keruleti_zaj</div>
+      </li>
+      <li><strong>OEVK szimulacio</strong>: Minden keruletben a legtobb szavazatot kapo jelolt nyer. Toredekszavazatok szamitasa.</li>
+      <li><strong>Listai elosztias</strong>: d'Hondt modszer a kuszobertekek alkalmazasa utan.</li>
+      <li><strong>Osszes mandatum</strong> = OEVK + lista mandatumok.</li>
+    </ol>
+
+    <h3>Parameterek</h3>
+    <ul>
+      <li><strong>Orszagos kozvelemenykutatasi hiba (sigma)</strong>: A kozvelemenykutatasok szisztematikus hibajarol szolo feltetelezesunk. Alapertek: 3%. Ha ez magasabb, szelessebb konfidencia-intervallumokat kapunk.</li>
+      <li><strong>Regionalis sigma</strong>: Mennyire terhetnek el a regiok az orszagos trendtol. Alapertek: 2.5%.</li>
+      <li><strong>Keruleti sigma</strong>: Egyedi keruleti zaj. Alapertek: 2%.</li>
+      <li><strong>Fidesz-Ellenzek korrelacio</strong>: Ha a Fidesz jobban teljesit, az ellenzek rosszabbul. Alapertek: -0.7.</li>
+      <li><strong>Kutato sulyozas</strong>: Minden kutatohoz minosegi suly (0-1) es hazeffektus-korrekciok rendelhetok.</li>
+    </ul>
+
+    <h3>Adatforrasok</h3>
+    <ul>
+      <li>2022-es valasztasi eredmenyek: <a href="https://vtr.valasztas.hu/ogy2022" target="_blank">Nemzeti Valasztasi Iroda</a></li>
+      <li>Kozvelemenykutatasok: Median, Publicus, Zavecz Research, IDEA Intezet, Republikon, Nezopont, Szazadveg, stb.</li>
+    </ul>
+
+    <h3>Korlatozasok</h3>
+    <ul>
+      <li>A modell a 2022-es keruleti eredmenyekre epit baziskent. Az uj partok (pl. Tisza) becslese a regi ellenzeki koalicio szavazatainak felosztasan alapul.</li>
+      <li>Nem modelezi a nemzetisegi listakat (1 mandatum).</li>
+      <li>A kozvelemenykutatasok hazeffektusainak becslese szubjektiv.</li>
+      <li>A modell feltetelezi, hogy a szavazoi viselkedes alapvetoen hasonlo a 2022-eshez, a valtozasokat a swing modell ragadja meg.</li>
+    </ul>
+  </div>
+
+  <!-- ENGLISH -->
+  <div id="methodology-en" class="methodology" style="display:none">
+    <h2>Methodology</h2>
+    <p>This simulator uses a Monte Carlo method to forecast the 2026 Hungarian parliamentary elections. The model runs 20,000 simulated elections, varying poll inputs randomly each time to assess uncertainty — similar to Nate Silver's FiveThirtyEight approach adapted for the Hungarian electoral system.</p>
+
+    <h3>The Hungarian Electoral System</h3>
+    <p>The National Assembly has <strong>199 seats</strong>:</p>
+    <ul>
+      <li><strong>106 single-member district (SMD) seats</strong> — first-past-the-post, single round. Highest vote count wins.</li>
+      <li><strong>93 national list seats</strong> — proportional allocation using the <strong>d'Hondt method</strong>.</li>
+    </ul>
+
+    <h3>Fragment Votes (Toredekszavazatok)</h3>
+    <p>A unique feature of the Hungarian system. The input to d'Hondt is NOT raw party-list votes. It is: <code>party_list_votes + fragment_votes</code>.</p>
+    <ul>
+      <li><strong>Losing candidates</strong>: ALL their votes become fragment votes for their party's national list.</li>
+      <li><strong>Winning candidate</strong>: <code>winner_votes - (second_place_votes + 1)</code> become fragment votes.</li>
+    </ul>
+
+    <h3>Thresholds</h3>
+    <ul>
+      <li>Single party: <strong>5%</strong> of total valid national list votes</li>
+      <li>Two-party joint list: <strong>10%</strong></li>
+      <li>Three-or-more party joint list: <strong>15%</strong></li>
+    </ul>
+    <p>Threshold is applied to raw list votes (before adding fragment votes). Parties below threshold are excluded from list seat allocation.</p>
+
+    <h3>How the Simulation Works (step by step)</h3>
+    <ol>
+      <li><strong>Poll aggregation</strong>: Weighted average of polls by recency (exponential decay), sample size, and pollster quality/reliability.</li>
+      <li><strong>Correlated draw</strong>: Draw vote shares from a multivariate normal distribution in logit space, ensuring shares stay in (0,1) and sum to 1.0. Includes systematic polling error (all polls wrong in the same direction).</li>
+      <li><strong>Swing model</strong>: Translate national share changes to district level with regional and district-level noise.
+        <div class="formula">district_result = 2022_baseline + national_swing + regional_noise + district_noise</div>
+      </li>
+      <li><strong>SMD simulation</strong>: In each of 106 districts, the candidate with the most votes wins. Fragment votes are calculated.</li>
+      <li><strong>List allocation</strong>: d'Hondt method applied to (list votes + fragment votes) for parties above threshold.</li>
+      <li><strong>Total seats</strong> = SMD seats + list seats for each party.</li>
+    </ol>
+
+    <h3>Key Parameters</h3>
+    <ul>
+      <li><strong>National polling error (sigma)</strong>: How much polls might be systematically off. Default: 3%. Higher values = wider confidence intervals.</li>
+      <li><strong>Regional sigma</strong>: How much regions can deviate from the national trend. Default: 2.5%.</li>
+      <li><strong>District sigma</strong>: Idiosyncratic per-district noise. Default: 2%.</li>
+      <li><strong>Fidesz-Opposition correlation</strong>: When Fidesz goes up, opposition goes down. Default: -0.7.</li>
+      <li><strong>Pollster weighting</strong>: Each pollster gets a quality weight (0-1) and house effect corrections (in percentage points).</li>
+    </ul>
+
+    <h3>Data Sources</h3>
+    <ul>
+      <li>2022 election results: <a href="https://vtr.valasztas.hu/ogy2022" target="_blank">National Election Office (NVI)</a></li>
+      <li>Polls: Median, Publicus, Zavecz Research, IDEA Institute, Republikon, Nezopont, Szazadveg, and others.</li>
+    </ul>
+
+    <h3>Limitations</h3>
+    <ul>
+      <li>The model uses 2022 district results as baseline. New parties (e.g., Tisza) are estimated by splitting the 2022 united opposition vote.</li>
+      <li>Does not model nationality list seats (1 seat).</li>
+      <li>Pollster house effect estimates are subjective.</li>
+      <li>Assumes voter behavior is fundamentally similar to 2022, with changes captured by the swing model.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ── Scripts ────────────────────────────────────────────────── -->
+<script src="js/i18n.js"></script>
+<script src="js/api.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>

@@ -8,7 +8,7 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
 from app.config import settings
-from app.routes import carpool, contact, health, helprequest, signup
+from app.routes import carpool, contact, health, helprequest, signup, simulation
 
 limiter = Limiter(key_func=get_remote_address)
 
@@ -28,8 +28,16 @@ app.include_router(signup.router, prefix="/api")
 app.include_router(contact.router, prefix="/api")
 app.include_router(helprequest.router, prefix="/api")
 app.include_router(carpool.router, prefix="/api")
+app.include_router(simulation.router, prefix="/api")
 
-# Serve frontend static files (check Docker path first, then local dev path)
+# Serve simulation frontend at /sim
+sim_frontend_dir = Path("/simulation-frontend")
+if not sim_frontend_dir.is_dir():
+    sim_frontend_dir = Path(__file__).resolve().parent.parent.parent / "simulation-frontend"
+if sim_frontend_dir.is_dir():
+    app.mount("/sim", StaticFiles(directory=str(sim_frontend_dir), html=True), name="sim-frontend")
+
+# Serve main frontend static files (check Docker path first, then local dev path)
 frontend_dir = Path("/frontend")
 if not frontend_dir.is_dir():
     frontend_dir = Path(__file__).resolve().parent.parent.parent / "frontend"

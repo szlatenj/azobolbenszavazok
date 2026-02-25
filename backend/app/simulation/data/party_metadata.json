@@ -1,0 +1,87 @@
+{
+  "parties_2022": {
+    "fidesz": {
+      "name": "FIDESZ-KDNP",
+      "color": "#FD8100",
+      "coalition_members": 2,
+      "threshold": 0.10
+    },
+    "opposition": {
+      "name": "DK-JOBBIK-MOMENTUM-MSZP-LMP-PÁRBESZÉD",
+      "color": "#1E90FF",
+      "coalition_members": 6,
+      "threshold": 0.15
+    },
+    "mi_hazank": {
+      "name": "Mi Hazánk Mozgalom",
+      "color": "#2E8B57",
+      "coalition_members": 1,
+      "threshold": 0.05
+    },
+    "mkkp": {
+      "name": "Magyar Kétfarkú Kutya Párt",
+      "color": "#888888",
+      "coalition_members": 1,
+      "threshold": 0.05
+    },
+    "other": {
+      "name": "Egyéb",
+      "color": "#CCCCCC",
+      "coalition_members": 1,
+      "threshold": 0.05
+    }
+  },
+  "parties_2026": {
+    "fidesz": {
+      "name": "FIDESZ-KDNP",
+      "color": "#FD8100",
+      "coalition_members": 2,
+      "threshold": 0.10
+    },
+    "tisza": {
+      "name": "TISZA Párt",
+      "color": "#00A3E0",
+      "coalition_members": 1,
+      "threshold": 0.05
+    },
+    "mi_hazank": {
+      "name": "Mi Hazánk Mozgalom",
+      "color": "#2E8B57",
+      "coalition_members": 1,
+      "threshold": 0.05
+    },
+    "dk": {
+      "name": "Demokratikus Koalíció",
+      "color": "#0044AA",
+      "coalition_members": 1,
+      "threshold": 0.05
+    },
+    "mkkp": {
+      "name": "Magyar Kétfarkú Kutya Párt",
+      "color": "#888888",
+      "coalition_members": 1,
+      "threshold": 0.05
+    },
+    "other": {
+      "name": "Egyéb",
+      "color": "#CCCCCC",
+      "coalition_members": 1,
+      "threshold": 0.05
+    }
+  },
+  "opposition_2022_to_2026_split": {
+    "tisza": 0.75,
+    "dk": 0.15,
+    "other": 0.10
+  },
+  "regions": {
+    "budapest": "Budapest",
+    "pest": "Pest megye",
+    "northwestern": "Nyugat-Dunántúl",
+    "central_transdanubia": "Közép-Dunántúl",
+    "southern_transdanubia": "Dél-Dunántúl",
+    "northern_hungary": "Észak-Magyarország",
+    "northern_great_plain": "Észak-Alföld",
+    "southern_great_plain": "Dél-Alföld"
+  }
+}

@@ -7,6 +7,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY backend/ .
 COPY frontend/ /frontend/
+COPY simulation-frontend/ /simulation-frontend/
 
 EXPOSE 8000
 

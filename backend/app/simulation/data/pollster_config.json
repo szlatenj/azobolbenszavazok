@@ -1,0 +1,93 @@
+{
+  "_comment": "Pollster quality weights and house effect corrections. House effects are in percentage points (e.g., -5 means subtract 5 from that pollster's Fidesz number before averaging). Quality weights: 1.0 = neutral, <1.0 = less trusted, >1.0 = more trusted.",
+  "pollsters": {
+    "Median": {
+      "quality_weight": 1.0,
+      "lean": "independent",
+      "house_effects": {}
+    },
+    "Publicus": {
+      "quality_weight": 0.95,
+      "lean": "independent",
+      "house_effects": {}
+    },
+    "Zavecz Research": {
+      "quality_weight": 0.95,
+      "lean": "independent",
+      "house_effects": {}
+    },
+    "IDEA Intezet": {
+      "quality_weight": 0.90,
+      "lean": "independent",
+      "house_effects": {}
+    },
+    "Republikon": {
+      "quality_weight": 0.85,
+      "lean": "independent",
+      "house_effects": {}
+    },
+    "21 Kutatokozpont": {
+      "quality_weight": 0.85,
+      "lean": "independent",
+      "house_effects": {}
+    },
+    "Minerva Intezet": {
+      "quality_weight": 0.80,
+      "lean": "independent",
+      "house_effects": {}
+    },
+    "Iranytű Intezet": {
+      "quality_weight": 0.85,
+      "lean": "independent",
+      "house_effects": {}
+    },
+    "Nezopont": {
+      "quality_weight": 0.65,
+      "lean": "government-aligned",
+      "house_effects": {
+        "fidesz": -5.0,
+        "tisza": 3.0
+      }
+    },
+    "Szazadveg": {
+      "quality_weight": 0.60,
+      "lean": "government-aligned",
+      "house_effects": {
+        "fidesz": -5.0,
+        "tisza": 3.0
+      }
+    },
+    "Alapjogokert Kozpont": {
+      "quality_weight": 0.60,
+      "lean": "government-aligned",
+      "house_effects": {
+        "fidesz": -6.0,
+        "tisza": 4.0
+      }
+    },
+    "Real-PR 93": {
+      "quality_weight": 0.55,
+      "lean": "government-aligned",
+      "house_effects": {
+        "fidesz": -7.0,
+        "tisza": 5.0
+      }
+    },
+    "XXI Szazad Intezet": {
+      "quality_weight": 0.60,
+      "lean": "government-aligned",
+      "house_effects": {
+        "fidesz": -4.0,
+        "tisza": 3.0
+      }
+    },
+    "Magyar Tarsadalomkutato": {
+      "quality_weight": 0.55,
+      "lean": "government-aligned",
+      "house_effects": {
+        "fidesz": -8.0,
+        "tisza": 5.0
+      }
+    }
+  }
+}
