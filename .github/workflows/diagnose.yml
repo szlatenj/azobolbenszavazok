@@ -1,0 +1,44 @@
+name: Diagnose DB
+
+on:
+  workflow_dispatch:
+
+jobs:
+  diagnose:
+    runs-on: self-hosted
+    steps:
+      - name: Container status
+        run: docker ps -a
+
+      - name: API container logs (last 100 lines)
+        run: cd /opt/azobolbenszavazok && docker compose logs --tail=100 api 2>&1 || true
+
+      - name: Test DB connectivity from host
+        run: |
+          ping -c 2 -W 2 192.168.1.159 2>&1 || true
+          nc -zv -w 3 192.168.1.159 5432 2>&1 || true
+
+      - name: Test DB from inside container
+        run: |
+          docker exec voting-guide-api python -c "
+          import asyncio, asyncpg
+          async def test():
+              try:
+                  conn = await asyncio.wait_for(
+                      asyncpg.connect('postgresql://postgres:asdqwe123@192.168.1.159:5432/voting_guide'),
+                      timeout=5
+                  )
+                  print('DB OK:', await conn.fetchval('SELECT 1'))
+                  tables = await conn.fetch(\"SELECT tablename FROM pg_tables WHERE schemaname='public'\")
+                  print('Tables:', [t['tablename'] for t in tables])
+                  await conn.close()
+              except Exception as e:
+                  print(f'DB FAILED: {type(e).__name__}: {e}')
+          asyncio.run(test())
+          " 2>&1 || true
+
+      - name: Check disk space
+        run: df -h
+
+      - name: Check host networking
+        run: ip addr show 2>&1 || true
